@@ -1,0 +1,167 @@
+/* ===== Assessment Listing ===== */
+.assessment-listing {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.al-fixed {
+  flex-shrink: 0;
+  padding: 24px 32px 0;
+  background-color: #f8f9fb;
+}
+
+.al-scrollable {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 32px 24px;
+}
+
+/* Header */
+.al-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.al-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a2e;
+  white-space: nowrap;
+}
+
+.al-header-right {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-left: auto;
+}
+
+/* Table */
+.al-table {
+  min-width: 1300px;
+}
+
+/* Revenue link */
+.al-revenue-link {
+  color: #16a34a;
+  font-weight: 600;
+  cursor: default;
+}
+
+/* Assigned / Completions cell */
+.al-assigned-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.al-count-link {
+  font-weight: 600;
+  color: #6366f1;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.al-count-link:hover {
+  text-decoration: underline;
+}
+
+.al-count-detail {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* Engagement bar */
+.al-engagement {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 120px;
+}
+
+.al-engagement-bar {
+  width: 100%;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.al-engagement-fill {
+  height: 100%;
+  background: #3b82f6;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.al-engagement-text {
+  font-size: 11px;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+/* Status badges */
+.al-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 70px;
+  padding: 5px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.al-status--active {
+  background: #ecfdf5;
+  color: #16a34a;
+  border: 1px solid #a7f3d0;
+}
+
+.al-status--draft {
+  background: #fff7ed;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
+}
+
+.al-status--inactive {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1200px) {
+  .al-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .al-header-right {
+    margin-left: 0;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .al-title {
+    font-size: 18px;
+  }
+
+  .al-fixed {
+    padding: 20px 20px 0;
+  }
+
+  .al-scrollable {
+    padding: 0 20px 20px;
+  }
+}

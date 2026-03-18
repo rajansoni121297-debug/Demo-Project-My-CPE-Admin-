@@ -1,0 +1,278 @@
+/* ===== Assessment Detail ===== */
+.assessment-detail {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.ad-fixed {
+  flex-shrink: 0;
+  padding: 24px 32px 0;
+  background-color: #f8f9fb;
+}
+
+.ad-scrollable {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 32px 24px;
+}
+
+/* Header */
+.ad-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.ad-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+
+.ad-back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e0e4ea;
+  border-radius: 8px;
+  background: #fff;
+  color: #6366f1;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.ad-back-btn:hover {
+  background: #eef2ff;
+}
+
+.ad-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.ad-header-right {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-left: auto;
+}
+
+/* Filters */
+.ad-filters-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 0;
+  padding-bottom: 16px;
+}
+
+.ad-filters-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ad-filter-dropdown {
+  position: relative;
+}
+
+.ad-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid #e0e4ea;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  color: #4b5563;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  white-space: nowrap;
+}
+
+.ad-filter-btn:hover {
+  border-color: #6366f1;
+}
+
+.ad-filter-btn--icon {
+  gap: 8px;
+}
+
+.ad-filters-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Table */
+.ad-table {
+  min-width: 1400px;
+}
+
+/* Name cell */
+.ad-name-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ad-email {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* Status badges */
+.ad-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  padding: 5px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.ad-status--completed {
+  background: #ecfdf5;
+  color: #16a34a;
+  border: 1px solid #a7f3d0;
+}
+
+.ad-status--pending {
+  background: #fff7ed;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
+}
+
+.ad-status--lapsed {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+
+/* Subscription badge */
+.ad-sub-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  padding: 5px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.ad-sub-badge--teams {
+  background: #eef2ff;
+  color: #6366f1;
+  border: 1px solid #c7d2fe;
+}
+
+.ad-sub-badge--standalone {
+  background: #ecfdf5;
+  color: #16a34a;
+  border: 1px solid #a7f3d0;
+}
+
+/* Feedback link */
+.ad-feedback-link {
+  color: #6366f1;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ad-feedback-link:hover {
+  text-decoration: underline;
+}
+
+/* Download button */
+.ad-download-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+
+.ad-download-btn:hover {
+  background: #f3f4f6;
+  color: #6366f1;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1200px) {
+  .ad-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ad-header-right {
+    margin-left: 0;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .ad-title {
+    font-size: 18px;
+  }
+
+  .ad-fixed {
+    padding: 20px 20px 0;
+  }
+
+  .ad-scrollable {
+    padding: 0 20px 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .ad-filters-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ad-filters-left {
+    width: 100%;
+  }
+
+  .ad-filter-btn {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .ad-filters-right {
+    width: 100%;
+  }
+
+  .ad-filters-right .clear-all-btn,
+  .ad-filters-right .search-btn {
+    flex: 1;
+  }
+}
