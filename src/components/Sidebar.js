@@ -7,11 +7,11 @@ const menuItems = [
     label: 'Questions and Assessments',
     icon: LayoutGrid,
     subItems: [
-      { label: 'Questions', icon: FileText },
-      { label: 'Assessments', icon: ListChecks },
-      { label: 'Category', icon: FolderTree },
-      { label: 'Report', icon: ClipboardList },
-      { label: 'Role', icon: UserCheck },
+      { label: 'Questions', icon: FileText, navKey: 'Questions' },
+      { label: 'Assessments', icon: ListChecks, navKey: 'QA-Assessments' },
+      { label: 'Category', icon: FolderTree, navKey: 'Category' },
+      { label: 'Report', icon: ClipboardList, navKey: 'Report' },
+      { label: 'Role', icon: UserCheck, navKey: 'Role' },
     ],
   },
   {
@@ -95,7 +95,7 @@ const Sidebar = ({ collapsed, onToggleCollapse, onNavChange }) => {
                         <button
                           key={sub.label}
                           className={`sidebar-submenu-item ${activeItem === sub.label ? 'active' : ''}`}
-                          onClick={() => { setActiveItem(sub.label); onNavChange && onNavChange(sub.label); }}
+                          onClick={() => { setActiveItem(sub.label); onNavChange && onNavChange(sub.navKey || sub.label); }}
                         >
                           <SubIcon size={16} strokeWidth={1.8} />
                           <span>{sub.label}</span>

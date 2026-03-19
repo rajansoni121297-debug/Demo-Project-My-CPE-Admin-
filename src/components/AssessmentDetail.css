@@ -44,7 +44,7 @@
   border: 1px solid #e0e4ea;
   border-radius: 8px;
   background: #fff;
-  color: #6366f1;
+  color: #7162EA;
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -107,7 +107,7 @@
 }
 
 .ad-filter-btn:hover {
-  border-color: #6366f1;
+  border-color: #7162EA;
 }
 
 .ad-filter-btn--icon {
@@ -183,7 +183,7 @@
 
 .ad-sub-badge--teams {
   background: #eef2ff;
-  color: #6366f1;
+  color: #7162EA;
   border: 1px solid #c7d2fe;
 }
 
@@ -195,7 +195,7 @@
 
 /* Feedback link */
 .ad-feedback-link {
-  color: #6366f1;
+  color: #7162EA;
   font-weight: 500;
   cursor: pointer;
 }
@@ -221,7 +221,7 @@
 
 .ad-download-btn:hover {
   background: #f3f4f6;
-  color: #6366f1;
+  color: #7162EA;
 }
 
 /* ===== Responsive ===== */

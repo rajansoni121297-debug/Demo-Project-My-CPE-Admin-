@@ -1,0 +1,283 @@
+/* ===== QA Category ===== */
+.qa-category {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.qc-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 32px 24px;
+}
+
+.qc-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #f8f9fb;
+  padding-top: 24px;
+}
+
+/* Header */
+.qc-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.qc-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qc-star-icon {
+  color: #7162EA;
+}
+
+.qc-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a2e;
+  white-space: nowrap;
+}
+
+.qc-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.qc-link-btn {
+  border: none;
+  background: transparent;
+  color: #7162EA;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.qc-link-btn:hover {
+  text-decoration: underline;
+}
+
+.qc-create-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 8px;
+  background: #7162EA;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.qc-create-btn:hover {
+  background: #5f52d4;
+}
+
+.qc-import-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 20px;
+  border: 1px solid #1e3a5f;
+  border-radius: 8px;
+  background: #fff;
+  color: #1e3a5f;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.qc-import-btn:hover {
+  background: #1e3a5f;
+  color: #fff;
+}
+
+/* Filters */
+.qc-filters {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.qc-filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+
+/* Table */
+.qc-table {
+  min-width: 1000px;
+}
+
+/* Category name */
+.qc-category-name {
+  color: #1a1a2e;
+  font-weight: 500;
+}
+
+/* Topic tags */
+.qc-topic-cell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 140px;
+  min-height: 32px;
+  padding: 4px 6px;
+  border: 1px solid #e0e4ea;
+  border-radius: 6px;
+  background: #fff;
+  align-items: center;
+}
+
+.qc-topic-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: #dbeafe;
+  color: #1e3a5f;
+  border: 1px solid #93c5fd;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.qc-topic-tag-x {
+  cursor: pointer;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.qc-topic-tag-x:hover {
+  color: #dc2626;
+}
+
+/* Status badge */
+.qc-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  padding: 5px 14px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.qc-status--active {
+  background: #16a34a;
+  color: #fff;
+}
+
+.qc-status--inactive {
+  background: #dc2626;
+  color: #fff;
+}
+
+/* Action buttons */
+.qc-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qc-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.qc-action-btn--edit {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.qc-action-btn--edit:hover {
+  background: #bfdbfe;
+}
+
+.qc-action-btn--delete {
+  background: #fce4ec;
+  color: #1a1a2e;
+}
+
+.qc-action-btn--delete:hover {
+  background: #f8bbd0;
+}
+
+/* Pagination */
+.qc-pagination {
+  display: flex;
+  align-items: center;
+  padding: 20px 0 8px;
+}
+
+.qc-pagination-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.qc-pagination-info {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1200px) {
+  .qc-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .qc-header-right {
+    margin-left: 0;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .qc-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 768px) {
+  .qc-title {
+    font-size: 18px;
+  }
+
+  .qc-content {
+    padding: 0 20px 20px;
+  }
+}

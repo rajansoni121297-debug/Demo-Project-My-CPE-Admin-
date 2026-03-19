@@ -1,0 +1,130 @@
+/* ===== Shared Multi-Select Dropdown ===== */
+.msd-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 160px;
+  position: relative;
+}
+
+.msd-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.msd-wrapper {
+  position: relative;
+}
+
+.msd-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #e0e4ea;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+  color: #4b5563;
+  cursor: pointer;
+  outline: none;
+  text-align: left;
+  transition: border-color 0.15s;
+}
+
+.msd-btn:hover,
+.msd-btn:focus {
+  border-color: #7162EA;
+}
+
+.msd-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.msd-chevron {
+  color: #9ca3af;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+
+.msd-chevron--open {
+  transform: rotate(180deg);
+}
+
+.msd-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  min-width: 240px;
+  background: #fff;
+  border: 1px solid #7162EA;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 60;
+  overflow: hidden;
+}
+
+.msd-search {
+  padding: 8px;
+}
+
+.msd-search-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #e0e4ea;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #374151;
+  outline: none;
+}
+
+.msd-search-input:focus {
+  border-color: #7162EA;
+}
+
+.msd-options {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.msd-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-bottom: 1px solid #f0f1f3;
+}
+
+.msd-option:last-child {
+  border-bottom: none;
+}
+
+.msd-option:hover {
+  background: #f8f9fb;
+}
+
+.msd-option input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #7162EA;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.msd-option span {
+  flex: 1;
+  margin-right: 10px;
+}

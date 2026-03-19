@@ -111,7 +111,7 @@
 }
 
 .header-search-input:focus {
-  border-color: #6366f1;
+  border-color: #7162EA;
 }
 
 .header-search-icon {
@@ -127,10 +127,10 @@
   gap: 6px;
   height: 40px;
   padding: 0 20px;
-  border: 1px solid #6366f1;
+  border: 1px solid #7162EA;
   border-radius: 8px;
   background: #fff;
-  color: #6366f1;
+  color: #7162EA;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -139,7 +139,7 @@
 }
 
 .export-btn:hover {
-  background: #6366f1;
+  background: #7162EA;
   color: #fff;
 }
 
@@ -182,7 +182,7 @@
 }
 
 .filter-dropdown-btn:hover {
-  border-color: #6366f1;
+  border-color: #7162EA;
 }
 
 .filter-dropdown-menu {
@@ -208,7 +208,7 @@
 
 .filter-dropdown-item:hover {
   background: #f3f4f6;
-  color: #6366f1;
+  color: #7162EA;
 }
 
 .filters-right {
@@ -231,8 +231,8 @@
 }
 
 .clear-all-btn:hover {
-  border-color: #6366f1;
-  color: #6366f1;
+  border-color: #7162EA;
+  color: #7162EA;
 }
 
 .search-btn {
@@ -240,7 +240,7 @@
   padding: 0 28px;
   border: none;
   border-radius: 8px;
-  background: #6366f1;
+  background: #7162EA;
   color: #fff;
   font-size: 13px;
   font-weight: 600;
@@ -249,7 +249,7 @@
 }
 
 .search-btn:hover {
-  background: #4f46e5;
+  background: #5f52d4;
 }
 
 /* ===== Table (Desktop) ===== */
@@ -340,7 +340,7 @@
 }
 
 .assessment-link {
-  color: #6366f1;
+  color: #7162EA;
   font-weight: 500;
   cursor: pointer;
 }
@@ -360,7 +360,7 @@
 }
 
 .revenue-link {
-  color: #6366f1;
+  color: #7162EA;
   cursor: pointer;
   transition: color 0.15s;
 }
@@ -384,7 +384,7 @@
 
 .status-badge--teams {
   background: #eef2ff;
-  color: #6366f1;
+  color: #7162EA;
   border: 1px solid #c7d2fe;
 }
 
@@ -511,7 +511,7 @@
 }
 
 .pagination-select:focus {
-  border-color: #6366f1;
+  border-color: #7162EA;
 }
 
 .pagination-select-icon {
@@ -542,8 +542,8 @@
 }
 
 .page-btn:hover:not(:disabled) {
-  border-color: #6366f1;
-  color: #6366f1;
+  border-color: #7162EA;
+  color: #7162EA;
 }
 
 .page-btn:disabled {
@@ -555,7 +555,7 @@
   width: 42px;
   height: 34px;
   text-align: center;
-  border: 1px solid #6366f1;
+  border: 1px solid #7162EA;
   border-radius: 6px;
   font-size: 13px;
   font-weight: 500;

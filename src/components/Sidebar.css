@@ -41,7 +41,7 @@
 .sidebar-logo-icon {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  background: linear-gradient(135deg, #5f52d4, #7c3aed);
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -137,7 +137,7 @@
 
 .sidebar-submenu-item.active {
   background-color: #eef2ff;
-  color: #4f46e5;
+  color: #5f52d4;
   font-weight: 600;
 }
 
@@ -159,7 +159,7 @@
 
 .sidebar-collapse-btn:hover {
   background: #f3f4f6;
-  color: #6366f1;
+  color: #7162EA;
 }
 
 /* Mobile toggle */
