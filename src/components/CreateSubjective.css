@@ -1,0 +1,149 @@
+/* ===== CreateSubjective ===== */
+
+/* Subtitle tag (below page title) */
+.csub-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  background: #f0edff;
+  border: 1px solid #c4bbf8;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5a4fcf;
+  margin-bottom: 28px;
+}
+
+/* 3-column fields row */
+.csub-fields-row {
+  display: grid;
+  grid-template-columns: 1fr 0.5fr 1.5fr;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: start;
+}
+
+/* Name of Question */
+.csub-name-field {
+  margin-bottom: 24px;
+}
+
+/* Editor sections */
+.csub-editor-section {
+  margin-bottom: 24px;
+}
+
+.csub-editor-label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* ===== Allow File Upload ===== */
+.csub-checkbox-row {
+  margin-bottom: 24px;
+}
+
+.csub-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+}
+
+.csub-checkbox {
+  width: 15px;
+  height: 15px;
+  accent-color: #7162EA;
+  cursor: pointer;
+}
+
+/* ===== Upload Section ===== */
+.csub-upload-section {
+  margin-bottom: 8px;
+}
+
+.csub-upload-label-text {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.csub-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.csub-browse-btn {
+  height: 36px;
+  padding: 0 18px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+}
+
+.csub-browse-btn:hover {
+  border-color: #7162EA;
+  color: #7162EA;
+}
+
+.csub-files-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.csub-file-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: #f0edff;
+  border: 1px solid #c4bbf8;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #5a4fcf;
+}
+
+.csub-file-name {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.csub-file-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: none;
+  background: transparent;
+  color: #7162EA;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.csub-file-remove:hover {
+  background: #c4bbf8;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+  .csub-fields-row { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 600px) {
+  .csub-fields-row { grid-template-columns: 1fr; }
+}

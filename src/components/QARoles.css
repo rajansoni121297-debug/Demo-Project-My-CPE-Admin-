@@ -3,22 +3,25 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
 .qr-content {
   flex: 1;
-  overflow-y: auto;
-  padding: 0 32px 24px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  padding: 0 32px 0;
 }
 
 .qr-sticky {
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  flex-shrink: 0;
   background-color: #f8f9fb;
   padding-top: 24px;
+  z-index: 10;
 }
 
 /* Header */
@@ -127,9 +130,26 @@
   margin-left: auto;
 }
 
+/* Table area */
+.qr-table-area {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e8eaed;
+}
+
 /* Table */
 .qr-table {
   min-width: 800px;
+}
+
+.qr-table th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 2;
 }
 
 .qr-role-name {
@@ -176,9 +196,10 @@
 
 /* Pagination */
 .qr-pagination {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  padding: 20px 0 8px;
+  padding: 16px 0;
 }
 
 .qr-pagination-left {

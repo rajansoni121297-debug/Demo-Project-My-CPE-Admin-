@@ -11,11 +11,12 @@ import QARoles from './components/QARoles';
 import QACategory from './components/QACategory';
 import CreateCategory from './components/CreateCategory';
 import QAQuestions from './components/QAQuestions';
+import QAReport from './components/QAReport';
 import Toast from './components/Toast';
 import './App.css';
 
 function App() {
-  const [currentScreen, setCurrentScreen] = useState('users');
+  const [currentScreen, setCurrentScreen] = useState('qaQuestions');
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedAssessment, setSelectedAssessment] = useState(null);
   const [assessmentFilterType, setAssessmentFilterType] = useState(null);
@@ -32,6 +33,7 @@ function App() {
     else if (item === 'QA-Assessments') setCurrentScreen('qaAssessments');
     else if (item === 'Role') setCurrentScreen('qaRoles');
     else if (item === 'Category') setCurrentScreen('qaCategory');
+    else if (item === 'Report') setCurrentScreen('qaReport');
     else if (item === 'Questions') setCurrentScreen('qaQuestions');
     setSelectedUser(null);
     setSelectedAssessment(null);
@@ -60,6 +62,8 @@ function App() {
             onSuccess={() => { setCurrentScreen('qaAssessments'); showToast('Assessment created successfully!'); }}
           />
         );
+      case 'qaReport':
+        return <QAReport />;
       case 'qaQuestions':
         return <QAQuestions showToast={showToast} />;
       case 'qaRoles':

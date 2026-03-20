@@ -3,22 +3,34 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
 .qq-content {
   flex: 1;
-  overflow-y: auto;
-  padding: 0 32px 24px;
+  display: flex;
+  flex-direction: column;
+  padding: 0 32px 0;
+  overflow: hidden;
+  min-height: 0;
 }
 
 .qq-sticky {
-  position: sticky;
-  top: 0;
+  flex-shrink: 0;
   z-index: 10;
   background-color: #f8f9fb;
   padding-top: 24px;
+}
+
+.qq-table-area {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e8eaed;
 }
 
 /* Header */
@@ -282,6 +294,21 @@
 
 /* Table */
 .qq-table { min-width: 1400px; }
+
+.qq-table th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 2;
+  font-size: 12px;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 12px 16px;
+  border-bottom: 2px solid #e8eaed;
+  white-space: nowrap;
+}
 
 .qq-checkbox {
   width: 16px;
@@ -676,6 +703,12 @@
   font-size: 18px;
 }
 
+/* Pagination anchored at bottom of flex column */
+.qq-content .pagination {
+  flex-shrink: 0;
+  padding: 16px 0 16px;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 1200px) {
   .qq-header { flex-direction: column; align-items: flex-start; }
@@ -690,4 +723,200 @@
 @media (max-width: 768px) {
   .qq-title { font-size: 18px; }
   .qq-content { padding: 0 20px 20px; }
+}
+
+
+/* ===== Simulation Type Selection ===== */
+.sim-type-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.sim-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 20px 24px;
+  border: 2px solid #e0e4ea;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.18s;
+}
+
+.sim-type-btn:hover {
+  border-color: #7162EA;
+  background: #f8f6ff;
+  box-shadow: 0 4px 16px rgba(113, 98, 234, 0.12);
+}
+
+.sim-type-btn--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sim-type-btn--disabled:hover {
+  border-color: #e0e4ea;
+  background: #fff;
+  box-shadow: none;
+}
+
+.sim-type-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.sim-type-desc {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ===== Status Badge — clickable ===== */
+.qq-status-badge--clickable {
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s;
+}
+
+.qq-status-badge--clickable:hover {
+  opacity: 0.8;
+  transform: scale(1.03);
+}
+
+.qq-status-badge--active {
+  background: #dcfce7;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.qq-status-badge--inactive {
+  background: #fef9c3;
+  color: #a16207;
+  border: 1px solid #fde68a;
+}
+
+/* ===== Confirm Modal ===== */
+.qq-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+}
+
+.qq-modal {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+  width: 440px;
+  max-width: 90vw;
+}
+
+.qq-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px 14px;
+  border-bottom: 1px solid #f0f1f3;
+}
+
+.qq-modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.qq-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 0;
+  transition: all 0.15s;
+}
+
+.qq-modal-close:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.qq-modal-body {
+  padding: 20px 24px 16px;
+}
+
+.qq-modal-message {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.qq-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 24px 20px;
+}
+
+.qq-modal-btn {
+  height: 38px;
+  padding: 0 22px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+}
+
+.qq-modal-btn--cancel {
+  background: #fff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.qq-modal-btn--cancel:hover {
+  background: #f9fafb;
+}
+
+.qq-modal-btn--danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+.qq-modal-btn--danger:hover {
+  background: #b91c1c;
+}
+
+.qq-modal-btn--warning {
+  background: #d97706;
+  color: #fff;
+}
+
+.qq-modal-btn--warning:hover {
+  background: #b45309;
+}
+
+.qq-modal-btn--success {
+  background: #16a34a;
+  color: #fff;
+}
+
+.qq-modal-btn--success:hover {
+  background: #15803d;
 }

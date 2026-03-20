@@ -105,14 +105,37 @@ const QACategory = ({ onCreateCategory }) => {
   const [selectedParentCategory, setSelectedParentCategory] = useState([]);
   const [selectedKeyword, setSelectedKeyword] = useState([]);
   const [selectedDomain, setSelectedDomain] = useState([]);
+  const [appliedFilters, setAppliedFilters] = useState({ status: [], parent: [], keyword: [], domain: [], search: '' });
+  const [deletedNames, setDeletedNames] = useState([]);
+  const [confirmDelete, setConfirmDelete] = useState(null); // item name
 
-  const totalItems = CATEGORY_DATA.length;
+  const baseItems = CATEGORY_DATA.filter((item) => !deletedNames.includes(item.name));
+
+  const displayItems = baseItems.filter((item) => {
+    const af = appliedFilters;
+    if (af.status.length && !af.status.includes(item.status)) return false;
+    if (af.parent.length && !af.parent.includes(item.parentCategory)) return false;
+    if (af.domain.length && !af.domain.includes(item.domain)) return false;
+    if (af.search) {
+      const s = af.search.toLowerCase();
+      if (!item.name.toLowerCase().includes(s) && !item.parentCategory.toLowerCase().includes(s)) return false;
+    }
+    return true;
+  });
+
+  const totalItems = displayItems.length;
+
+  const handleSearch = () => {
+    setAppliedFilters({ status: selectedStatus, parent: selectedParentCategory, keyword: selectedKeyword, domain: selectedDomain, search: searchTerm });
+  };
 
   const clearFilters = () => {
     setSelectedStatus([]);
     setSelectedParentCategory([]);
     setSelectedKeyword([]);
     setSelectedDomain([]);
+    setSearchTerm('');
+    setAppliedFilters({ status: [], parent: [], keyword: [], domain: [], search: '' });
   };
 
   return (
@@ -186,13 +209,13 @@ const QACategory = ({ onCreateCategory }) => {
 
             <div className="qc-filter-actions">
               <button className="clear-all-btn" onClick={clearFilters}>Clear Filter</button>
-              <button className="search-btn">Search</button>
+              <button className="search-btn" onClick={handleSearch}>Search</button>
             </div>
           </div>
         </div>
 
         {/* Table */}
-        <div className="table-wrapper">
+        <div className="qc-table-area">
           <table className="users-table qc-table">
             <thead>
               <tr>
@@ -205,7 +228,7 @@ const QACategory = ({ onCreateCategory }) => {
               </tr>
             </thead>
             <tbody>
-              {CATEGORY_DATA.map((item, idx) => (
+              {displayItems.map((item, idx) => (
                 <tr key={idx}>
                   <td><span className="qc-category-name">{item.name}</span></td>
                   <td>{item.parentCategory}</td>
@@ -219,7 +242,7 @@ const QACategory = ({ onCreateCategory }) => {
                       <button className="qc-action-btn qc-action-btn--edit" title="Edit">
                         <ClipboardEdit size={15} />
                       </button>
-                      <button className="qc-action-btn qc-action-btn--delete" title="Delete">
+                      <button className="qc-action-btn qc-action-btn--delete" title="Delete" onClick={() => setConfirmDelete(item.name)}>
                         <Trash2 size={15} />
                       </button>
                     </div>
@@ -249,6 +272,20 @@ const QACategory = ({ onCreateCategory }) => {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirm Modal */}
+      {confirmDelete && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 500 }}>
+          <div style={{ background: '#fff', borderRadius: 12, padding: '28px 32px', width: 380, boxShadow: '0 16px 48px rgba(0,0,0,0.2)' }}>
+            <h3 style={{ margin: '0 0 10px', fontSize: 16, fontWeight: 700, color: '#1a1a2e' }}>Delete Category?</h3>
+            <p style={{ margin: '0 0 24px', fontSize: 13, color: '#6b7280' }}>Are you sure you want to delete <strong>{confirmDelete}</strong>? This action cannot be undone.</p>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button onClick={() => setConfirmDelete(null)} style={{ padding: '8px 20px', border: '1px solid #e0e4ea', borderRadius: 8, background: '#fff', cursor: 'pointer', fontSize: 13 }}>Cancel</button>
+              <button onClick={() => { setDeletedNames((p) => [...p, confirmDelete]); setConfirmDelete(null); }} style={{ padding: '8px 20px', border: 'none', borderRadius: 8, background: '#ef4444', color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

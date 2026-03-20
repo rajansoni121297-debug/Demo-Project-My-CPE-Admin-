@@ -50,13 +50,33 @@ const QARoles = () => {
   const [selectedStatus, setSelectedStatus] = useState([]);
   const [selectedLevel, setSelectedLevel] = useState([]);
   const [selectedDomain, setSelectedDomain] = useState([]);
+  const [appliedFilters, setAppliedFilters] = useState({ status: [], level: [], domain: [], search: '' });
+  const [deletedNames, setDeletedNames] = useState([]);
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
-  const totalItems = ROLE_DATA.length;
+  const baseItems = ROLE_DATA.filter((item) => !deletedNames.includes(item.name));
+
+  const displayItems = baseItems.filter((item) => {
+    const af = appliedFilters;
+    if (af.status.length && !af.status.includes(item.status)) return false;
+    if (af.level.length && !af.level.includes(item.level)) return false;
+    if (af.domain.length && !af.domain.includes(item.domain)) return false;
+    if (af.search && !item.name.toLowerCase().includes(af.search.toLowerCase())) return false;
+    return true;
+  });
+
+  const totalItems = displayItems.length;
+
+  const handleSearch = () => {
+    setAppliedFilters({ status: selectedStatus, level: selectedLevel, domain: selectedDomain, search: searchTerm });
+  };
 
   const clearFilters = () => {
     setSelectedStatus([]);
     setSelectedLevel([]);
     setSelectedDomain([]);
+    setSearchTerm('');
+    setAppliedFilters({ status: [], level: [], domain: [], search: '' });
   };
 
   return (
@@ -122,13 +142,13 @@ const QARoles = () => {
 
           <div className="qr-filter-actions">
             <button className="clear-all-btn" onClick={clearFilters}>Clear Filter</button>
-            <button className="search-btn">Search</button>
+            <button className="search-btn" onClick={handleSearch}>Search</button>
           </div>
         </div>
       </div>
 
         {/* Table */}
-        <div className="table-wrapper">
+        <div className="qr-table-area">
           <table className="users-table qr-table">
             <thead>
               <tr>
@@ -140,7 +160,7 @@ const QARoles = () => {
               </tr>
             </thead>
             <tbody>
-              {ROLE_DATA.map((item, idx) => (
+              {displayItems.map((item, idx) => (
                 <tr key={idx}>
                   <td><span className="qr-role-name">{item.name}</span></td>
                   <td>{item.level}</td>
@@ -151,7 +171,7 @@ const QARoles = () => {
                       <button className="qr-action-btn qr-action-btn--edit" title="Edit">
                         <ClipboardEdit size={15} />
                       </button>
-                      <button className="qr-action-btn qr-action-btn--delete" title="Delete">
+                      <button className="qr-action-btn qr-action-btn--delete" title="Delete" onClick={() => setConfirmDelete(item.name)}>
                         <Trash2 size={15} />
                       </button>
                     </div>
@@ -181,6 +201,20 @@ const QARoles = () => {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirm Modal */}
+      {confirmDelete && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 500 }}>
+          <div style={{ background: '#fff', borderRadius: 12, padding: '28px 32px', width: 380, boxShadow: '0 16px 48px rgba(0,0,0,0.2)' }}>
+            <h3 style={{ margin: '0 0 10px', fontSize: 16, fontWeight: 700, color: '#1a1a2e' }}>Delete Role?</h3>
+            <p style={{ margin: '0 0 24px', fontSize: 13, color: '#6b7280' }}>Are you sure you want to delete <strong>{confirmDelete}</strong>? This action cannot be undone.</p>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button onClick={() => setConfirmDelete(null)} style={{ padding: '8px 20px', border: '1px solid #e0e4ea', borderRadius: 8, background: '#fff', cursor: 'pointer', fontSize: 13 }}>Cancel</button>
+              <button onClick={() => { setDeletedNames((p) => [...p, confirmDelete]); setConfirmDelete(null); }} style={{ padding: '8px 20px', border: 'none', borderRadius: 8, background: '#ef4444', color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

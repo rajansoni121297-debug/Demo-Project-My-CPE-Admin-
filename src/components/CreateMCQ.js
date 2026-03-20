@@ -6,6 +6,7 @@ import {
   AlignLeft, AlignCenter, AlignRight, AlignJustify, Code, Minus, Quote,
 } from 'lucide-react';
 import './CreateMCQ.css';
+import ConfirmModal from './ConfirmModal';
 
 const DIFFICULTY_LEVELS = ['Basic', 'Intermediate', 'Advanced'];
 const CATEGORIES = [
@@ -144,26 +145,34 @@ const SelectDropdown = ({ label, placeholder, options, value, onChange, required
 /* ===== Main Component ===== */
 const MCQ_TYPE_OPTIONS = ['MCQ', 'Yes/No', 'True/False'];
 
-const CreateMCQ = ({ mcqType, onBack, onSave }) => {
-  const [selectType, setSelectType] = useState(mcqType || 'MCQ');
-  const [marks, setMarks] = useState('');
-  const [difficulty, setDifficulty] = useState('');
-  const [category, setCategory] = useState('');
-  const [question, setQuestion] = useState('');
+const CreateMCQ = ({ mcqType, onBack, onSave, initialData }) => {
+  const [selectType, setSelectType] = useState(initialData?.type || mcqType || 'MCQ');
+  const [marks, setMarks] = useState(initialData?.marks ?? '');
+  const [difficulty, setDifficulty] = useState(initialData?.level || '');
+  const [category, setCategory] = useState(initialData?.parentCategory || '');
+  const [question, setQuestion] = useState(initialData?.name || '');
 
   const typeConfig = OPTIONS_BY_TYPE[selectType] || OPTIONS_BY_TYPE['MCQ'];
   const isMCQ = selectType === 'MCQ';
 
   const [options, setOptions] = useState(
-    typeConfig.map((opt) => ({ label: opt.label, text: opt.text, explanation: '', isCorrect: false, editable: opt.editable }))
+    initialData?.options
+      ? initialData.options.map((o) => ({ label: o.label, text: o.text, isCorrect: o.isCorrect, explanation: o.explanation || '', editable: true }))
+      : typeConfig.map((opt) => ({ label: opt.label, text: opt.text, explanation: '', isCorrect: false, editable: opt.editable }))
   );
   const [errors, setErrors] = useState({});
+  const [isDirty, setIsDirty] = useState(false);
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+
+  const markDirty = () => { if (!isDirty) setIsDirty(true); };
+  const handleBack = () => { if (isDirty) setShowLeaveConfirm(true); else onBack(); };
 
   const handleTypeChange = (newType) => {
     setSelectType(newType);
     const config = OPTIONS_BY_TYPE[newType] || OPTIONS_BY_TYPE['MCQ'];
     setOptions(config.map((opt) => ({ label: opt.label, text: opt.text, explanation: '', isCorrect: false, editable: opt.editable })));
     setErrors({});
+    markDirty();
   };
 
   const clearError = (key) => {
@@ -173,11 +182,13 @@ const CreateMCQ = ({ mcqType, onBack, onSave }) => {
   const updateOption = (idx, field, value) => {
     setOptions((prev) => prev.map((o, i) => i === idx ? { ...o, [field]: value } : o));
     if (field === 'text') clearError(`option_${idx}`);
+    markDirty();
   };
 
   const toggleCorrect = (idx) => {
     setOptions((prev) => prev.map((o, i) => ({ ...o, isCorrect: i === idx })));
     clearError('correctAnswer');
+    markDirty();
   };
 
   const validate = () => {
@@ -210,7 +221,7 @@ const CreateMCQ = ({ mcqType, onBack, onSave }) => {
       <div className="cm-scroll">
         {/* Header */}
         <div className="cm-header">
-          <button type="button" className="cm-back-btn" onClick={onBack}>
+          <button type="button" className="cm-back-btn" onClick={handleBack}>
             <ArrowLeft size={18} />
           </button>
           <h1 className="cm-page-title">Multiple Choice Questions</h1>
@@ -231,20 +242,20 @@ const CreateMCQ = ({ mcqType, onBack, onSave }) => {
               className={`cm-text-input ${errors.marks ? 'cm-text-input--error' : ''}`}
               placeholder="e.g. 5"
               value={marks}
-              onChange={(e) => { setMarks(e.target.value); clearError('marks'); }}
+              onChange={(e) => { setMarks(e.target.value); clearError('marks'); markDirty(); }}
             />
             {errors.marks && <span className="cm-error-msg">{errors.marks}</span>}
           </div>
 
           <SelectDropdown
             label="Difficulty Level" placeholder="Select Difficulty Level" options={DIFFICULTY_LEVELS}
-            value={difficulty} onChange={(v) => { setDifficulty(v); clearError('difficulty'); }}
+            value={difficulty} onChange={(v) => { setDifficulty(v); clearError('difficulty'); markDirty(); }}
             required error={errors.difficulty}
           />
 
           <SelectDropdown
             label="Select Category" placeholder="Nothing selected" options={CATEGORIES}
-            value={category} onChange={(v) => { setCategory(v); clearError('category'); }}
+            value={category} onChange={(v) => { setCategory(v); clearError('category'); markDirty(); }}
             required error={errors.category}
           />
         </div>
@@ -258,7 +269,7 @@ const CreateMCQ = ({ mcqType, onBack, onSave }) => {
               className="cm-editor-area"
               placeholder="Type your question here..."
               value={question}
-              onChange={(e) => { setQuestion(e.target.value); clearError('question'); }}
+              onChange={(e) => { setQuestion(e.target.value); clearError('question'); markDirty(); }}
               rows={6}
             />
             <div className="cm-char-count">Characters : {question.length}</div>
@@ -341,12 +352,24 @@ const CreateMCQ = ({ mcqType, onBack, onSave }) => {
       <div className="cm-footer">
         <div className="cm-footer-inner">
           <button type="button" className="cm-btn cm-btn--save" onClick={handleSave}>Save</button>
-          <button type="button" className="cm-btn cm-btn--cancel" onClick={onBack}>Cancel</button>
+          <button type="button" className="cm-btn cm-btn--cancel" onClick={handleBack}>Cancel</button>
           <button type="button" className="cm-btn cm-btn--preview">
             <Eye size={16} /> Preview
           </button>
         </div>
       </div>
+
+      {showLeaveConfirm && (
+        <ConfirmModal
+          title="Unsaved Changes"
+          message="You have unsaved changes. Are you sure you want to leave? All changes will be lost."
+          confirmLabel="Leave"
+          cancelLabel="Stay"
+          variant="warning"
+          onConfirm={onBack}
+          onCancel={() => setShowLeaveConfirm(false)}
+        />
+      )}
     </div>
   );
 };
