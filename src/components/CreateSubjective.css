@@ -139,6 +139,61 @@
   background: #c4bbf8;
 }
 
+/* ===== Expected Points Label + Tooltip ===== */
+.csub-label-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.csub-label-row .csub-editor-label {
+  margin-bottom: 0;
+}
+
+.csub-info-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.csub-info-icon {
+  flex-shrink: 0;
+}
+
+.csub-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  padding: 10px 14px;
+  background: #1a1a2e;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  z-index: 50;
+  pointer-events: none;
+}
+
+.csub-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #1a1a2e;
+}
+
+.csub-info-trigger:hover .csub-tooltip {
+  display: block;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 900px) {
   .csub-fields-row { grid-template-columns: 1fr 1fr; }

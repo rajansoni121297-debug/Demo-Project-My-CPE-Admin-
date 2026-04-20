@@ -114,7 +114,7 @@ const CreateSubjective = ({ onBack, onSave, isEditing = false, initialData }) =>
   const [questionName, setQuestionName] = useState(initialData?.name || '');
   const [question, setQuestion] = useState(initialData?.question || '');
   const [allowUpload, setAllowUpload] = useState(initialData?.fileUploadAllowed === 'Yes');
-  const [explanation, setExplanation] = useState('');
+  const [expectedPoints, setExpectedPoints] = useState('');
   const [materialFiles, setMaterialFiles] = useState([]);
   const [errors, setErrors] = useState({});
   const [isDirty, setIsDirty] = useState(false);
@@ -147,7 +147,7 @@ const CreateSubjective = ({ onBack, onSave, isEditing = false, initialData }) =>
 
   const handleSave = () => {
     if (!validate()) return;
-    onSave({ difficulty, marks, category, questionName, question, allowUpload, explanation, materialFiles });
+    onSave({ difficulty, marks, category, questionName, question, expectedPoints });
   };
 
   return (
@@ -232,56 +232,30 @@ const CreateSubjective = ({ onBack, onSave, isEditing = false, initialData }) =>
           {errors.question && <span className="cm-error-msg">{errors.question}</span>}
         </div>
 
-        {/* Allow file upload */}
-        <div className="csub-checkbox-row">
-          <label className="csub-checkbox-label">
-            <input
-              type="checkbox"
-              className="csub-checkbox"
-              checked={allowUpload}
-              onChange={(e) => setAllowUpload(e.target.checked)}
-            />
-            Allow user to upload their file
-          </label>
-        </div>
-
-        {/* Explanation */}
+        {/* Expected Answer Points */}
         <div className="csub-editor-section">
-          <label className="cm-label csub-editor-label">Explanation:</label>
+          <div className="csub-label-row">
+            <label className="cm-label csub-editor-label">Expected Answer Points:</label>
+            <span className="csub-info-trigger">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="csub-info-icon">
+                <circle cx="8" cy="8" r="7.5" stroke="#7162EA" />
+                <text x="8" y="12" textAnchor="middle" fontSize="11" fontWeight="700" fill="#7162EA">i</text>
+              </svg>
+              <span className="csub-tooltip">
+                Define the key points you expect in the candidate's answer. AI will use these points to evaluate the response and generate feedback on the Assessment Report.
+              </span>
+            </span>
+          </div>
           <div className="cm-editor-card">
             <RichToolbar />
             <textarea
               className="cm-editor-area"
-              placeholder="Type Explanation: Why this answer is correct?"
-              value={explanation}
-              onChange={(e) => setExplanation(e.target.value)}
+              placeholder="List the key points expected in the answer. AI will evaluate the candidate's response based on these points."
+              value={expectedPoints}
+              onChange={(e) => { setExpectedPoints(e.target.value); markDirty(); }}
               style={{ minHeight: 120 }}
             />
           </div>
-        </div>
-
-        {/* Upload Material */}
-        <div className="csub-upload-section">
-          <label className="cm-label csub-upload-label-text">Upload Material</label>
-          <div className="csub-upload-row">
-            <button type="button" className="csub-browse-btn" onClick={() => fileInputRef.current.click()}>
-              <Upload size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
-              Browse File
-            </button>
-            <input ref={fileInputRef} type="file" multiple style={{ display: 'none' }} onChange={handleFileSelect} />
-          </div>
-          {materialFiles.length > 0 && (
-            <div className="csub-files-list">
-              {materialFiles.map((f, idx) => (
-                <div key={idx} className="csub-file-item">
-                  <span className="csub-file-name">{f.name}</span>
-                  <button type="button" className="csub-file-remove" onClick={() => handleRemoveFile(idx)}>
-                    <X size={12} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
       </div>

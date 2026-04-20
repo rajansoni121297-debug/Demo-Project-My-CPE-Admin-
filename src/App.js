@@ -5,7 +5,7 @@ import AssignedAssessment from './components/AssignedAssessment';
 import InvoiceHistory from './components/InvoiceHistory';
 import AssessmentListing from './components/AssessmentListing';
 import AssessmentDetail from './components/AssessmentDetail';
-import QAAssessments from './components/QAAssessments';
+import QAAssessments, { INITIAL_ASSESSMENT_DATA } from './components/QAAssessments';
 import CreateAssessment from './components/CreateAssessment';
 import QARoles from './components/QARoles';
 import QACategory from './components/QACategory';
@@ -22,6 +22,7 @@ function App() {
   const [assessmentFilterType, setAssessmentFilterType] = useState(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [toast, setToast] = useState(null);
+  const [assessments, setAssessments] = useState(INITIAL_ASSESSMENT_DATA);
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
@@ -54,12 +55,29 @@ function App() {
           />
         );
       case 'qaAssessments':
-        return <QAAssessments onCreateAssessment={() => setCurrentScreen('createAssessment')} />;
+        return (
+          <QAAssessments
+            assessments={assessments}
+            onCreateAssessment={() => setCurrentScreen('createAssessment')}
+            onUpdateAssessmentStatus={(index, nextStatus) => {
+              setAssessments((prev) => prev.map((assessment, assessmentIndex) => (
+                assessmentIndex === index
+                  ? { ...assessment, status: nextStatus }
+                  : assessment
+              )));
+              showToast(`Assessment status updated to ${nextStatus}.`);
+            }}
+          />
+        );
       case 'createAssessment':
         return (
           <CreateAssessment
             onBack={() => setCurrentScreen('qaAssessments')}
-            onSuccess={() => { setCurrentScreen('qaAssessments'); showToast('Assessment created successfully!'); }}
+            onSuccess={(newAssessment) => {
+              setAssessments((prev) => [newAssessment, ...prev]);
+              setCurrentScreen('qaAssessments');
+              showToast('Assessment created successfully!');
+            }}
           />
         );
       case 'qaReport':

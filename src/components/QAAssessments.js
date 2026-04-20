@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import {
   Search,
   ChevronDown,
@@ -13,6 +14,7 @@ import {
   Users,
   PlusCircle,
 } from 'lucide-react';
+import ConfirmModal from './ConfirmModal';
 import './QAAssessments.css';
 
 const TABS = [
@@ -66,7 +68,88 @@ const CREATED_BY = [
 
 const STATUS_OPTIONS = ['Draft', 'Active', 'Inactive'];
 
-const ASSESSMENT_DATA = [
+const CREATE_TO_LISTING_TYPE_LABEL = {
+  MCQ: 'MCQ',
+  SUB: 'Subjective',
+  AVS: 'Video',
+  'AI Video': 'AI Video',
+  SIM: 'Simulation',
+  ESSAY: 'Essay',
+};
+
+const normalizeQuestionType = (type) => CREATE_TO_LISTING_TYPE_LABEL[type] || type;
+
+const buildQuestionTypeConfigsFromLegacy = (questionText) => {
+  if (!questionText || typeof questionText !== 'string') return [];
+  const matches = [...questionText.matchAll(/(\d+(?:\.\d+)?)\s+([A-Za-z][A-Za-z\s/-]*)/g)];
+  if (matches.length === 0) return [];
+
+  return matches.map((match) => ({
+    type: normalizeQuestionType(match[2].trim()),
+    noOfQues: match[1],
+  }));
+};
+
+const formatQuestionSummary = (questionTypeConfigs = []) => {
+  const validConfigs = questionTypeConfigs.filter((config) => config?.type && config?.noOfQues !== '' && config?.noOfQues != null);
+  if (validConfigs.length === 0) return 'No question types configured';
+
+  return validConfigs
+    .map((config) => `${config.noOfQues} ${normalizeQuestionType(config.type)}`)
+    .join(' + ');
+};
+
+const getAssessmentQuestionTypes = (assessment) => {
+  const types = assessment.questionTypeConfigs?.map((config) => normalizeQuestionType(config.type)) || [];
+  return [...new Set(types)];
+};
+
+const normalizeAssessment = (assessment) => {
+  const questionTypeConfigs = assessment.questionTypeConfigs?.length
+    ? assessment.questionTypeConfigs
+    : buildQuestionTypeConfigsFromLegacy(assessment.questions);
+
+  return {
+    ...assessment,
+    questionTypeConfigs,
+  };
+};
+
+const getStatusTransitionConfig = (assessmentName, status) => {
+  if (status === 'Draft') {
+    return {
+      nextStatus: 'Active',
+      title: 'Make Assessment Live?',
+      message: `The assessment "${assessmentName}" is currently in Draft. If you make it live, it will become visible for use as an Active assessment. You can still mark it Inactive later if needed, but it will not return to Draft status.`,
+      confirmLabel: 'Go Live',
+      variant: 'success',
+    };
+  }
+
+  if (status === 'Active') {
+    return {
+      nextStatus: 'Inactive',
+      title: 'Mark Assessment Inactive?',
+      message: `The assessment "${assessmentName}" is currently Active. Marking it Inactive will stop it from being used as a live assessment until it is activated again. This change will remove it from active use, and Draft status will no longer be available.`,
+      confirmLabel: 'Mark Inactive',
+      variant: 'warning',
+    };
+  }
+
+  if (status === 'Inactive') {
+    return {
+      nextStatus: 'Active',
+      title: 'Activate Assessment Again?',
+      message: `The assessment "${assessmentName}" is currently Inactive. Activating it again will make it live and available for use. Once reactivated, the status will become Active and it will not return to Draft status.`,
+      confirmLabel: 'Activate',
+      variant: 'success',
+    };
+  }
+
+  return null;
+};
+
+export const INITIAL_ASSESSMENT_DATA = [
   {
     name: 'QuickBooks - QBO',
     questions: '20 MCQ',
@@ -80,6 +163,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ['Account Manager', 'Senior Accountant'],
   },
   {
     name: 'QuickBooks - QBO',
@@ -94,6 +178,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ['Staff Accountant', 'Junior Accountant', 'Accounting Intern'],
   },
   {
     name: 'CCH Axcess + ProSystem fx Audit Software',
@@ -108,6 +193,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Audit Staff","Audit Associate"],
   },
   {
     name: 'UltraTax Software',
@@ -122,6 +208,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Tax Associate","Junior Tax Accountant","Tax Intern"],
   },
   {
     name: 'Lacerte Tax Software',
@@ -136,6 +223,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Tax Associate","Junior Tax Accountant"],
   },
   {
     name: 'Drake Tax Software',
@@ -150,6 +238,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Junior Tax Accountant","Tax Intern"],
   },
   {
     name: 'CCH Axcess Tax Software',
@@ -164,6 +253,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Tax Associate","Junior Tax Accountant","Tax Intern"],
   },
   {
     name: 'NPO Audit',
@@ -178,6 +268,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Audit Associate","Audit Staff","Audit Senior"],
   },
   {
     name: 'Yellow Book (GAGAS)',
@@ -192,6 +283,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Audit Manager","Audit Supervisor","Audit Senior"],
   },
   {
     name: 'Individual Income Tax – Form 1040',
@@ -206,6 +298,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Junior Tax Accountant","Tax Associate","Tax Intern"],
   },
   {
     name: 'Partnership Tax – Schedule K-1',
@@ -220,6 +313,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Tax Manager","Tax Supervisor","Senior Tax Accountant"],
   },
   {
     name: 'Corporate Tax – Form 1120',
@@ -234,6 +328,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Tax Director","Senior Tax Manager","Tax Manager"],
   },
   {
     name: 'S-Corporation Tax – Form 1120-S',
@@ -248,6 +343,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Tax Supervisor","Tax Manager","Senior Tax Accountant"],
   },
   {
     name: 'Estate & Gift Tax Fundamentals',
@@ -262,6 +358,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Tax Director","Senior Tax Manager"],
   },
   {
     name: 'Tax Credits & Deductions Overview',
@@ -276,6 +373,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Tax Intern","Tax Associate","Junior Tax Accountant","Tax Supervisor","Senior Tax Accountant","Tax Manager"],
   },
   {
     name: 'Multistate Tax Nexus & Apportionment',
@@ -290,6 +388,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Draft',
     usedInPtc: '-',
+    mappedProfiles: ["Tax Director","Senior Tax Manager","Tax Manager"],
   },
   {
     name: 'Tax-Exempt Organizations & Form 990',
@@ -304,6 +403,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Tax Supervisor","Senior Tax Accountant"],
   },
   {
     name: 'IRS Audit Representation & Appeals',
@@ -318,6 +418,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Tax Director","Senior Tax Manager","Tax Manager"],
   },
   {
     name: 'Revenue Recognition – ASC 606',
@@ -332,6 +433,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Account Manager","Senior Accountant","Account Supervisor"],
   },
   {
     name: 'Lease Accounting – ASC 842',
@@ -346,6 +448,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Account Manager","Finance Manager","Senior Accountant"],
   },
   {
     name: 'Financial Statement Analysis Basics',
@@ -360,6 +463,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Staff Accountant","Junior Accountant","Accounting Intern"],
   },
   {
     name: 'Consolidations & Intercompany Eliminations',
@@ -374,6 +478,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Accounting Director","Finance Manager","CFO"],
   },
   {
     name: 'Government & Nonprofit Accounting',
@@ -388,6 +493,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Senior Accountant","Account Supervisor"],
   },
   {
     name: 'Managerial Accounting & Cost Analysis',
@@ -402,6 +508,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Staff Accountant","Junior Accountant","Accounting Intern","Account Manager"],
   },
   {
     name: 'Accounting Information Systems',
@@ -416,6 +523,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Draft',
     usedInPtc: '-',
+    mappedProfiles: ["Staff Accountant","Junior Accountant"],
   },
   {
     name: 'Risk-Based Audit Approach',
@@ -430,6 +538,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Audit Manager","Audit Supervisor","Audit Senior"],
   },
   {
     name: 'Audit Sampling & Evidence',
@@ -444,6 +553,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Audit Senior","Audit Supervisor"],
   },
   {
     name: 'Internal Controls & COSO Framework',
@@ -458,6 +568,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Assurance Partner","Audit Director","Senior Audit Manager","Audit Manager"],
   },
   {
     name: 'Auditing Employee Benefit Plans',
@@ -472,6 +583,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Senior Audit Manager","Audit Director"],
   },
   {
     name: 'IT Audit & General Controls',
@@ -486,6 +598,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Audit Manager","Audit Supervisor","Audit Senior","Audit Staff"],
   },
   {
     name: 'Fraud Detection & Prevention',
@@ -500,6 +613,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Assurance Partner","Audit Director","Senior Audit Manager","Audit Manager","Audit Supervisor","Audit Senior","Audit Staff","Audit Associate"],
   },
   {
     name: 'Group Audits & Component Auditors',
@@ -514,6 +628,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Inactive',
     usedInPtc: '-',
+    mappedProfiles: ["Assurance Partner","Audit Director"],
   },
   {
     name: 'Compilation & Review Engagements',
@@ -528,6 +643,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Audit Staff","Audit Associate"],
   },
   {
     name: 'Tax Planning Strategies for Individuals',
@@ -542,6 +658,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Tax Manager","Tax Supervisor","Senior Tax Accountant"],
   },
   {
     name: 'Depreciation Methods & Section 179',
@@ -556,6 +673,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Junior Tax Accountant","Tax Associate"],
   },
   {
     name: 'Qualified Business Income Deduction',
@@ -570,6 +688,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Tax Manager","Tax Supervisor","Senior Tax Accountant"],
   },
   {
     name: 'International Tax – GILTI & BEAT',
@@ -584,6 +703,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Draft',
     usedInPtc: '-',
+    mappedProfiles: ["Tax Director","Senior Tax Manager"],
   },
   {
     name: 'Payroll Tax Compliance',
@@ -598,6 +718,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Tax Associate","Junior Tax Accountant","Tax Intern","Staff Accountant"],
   },
   {
     name: 'Sales & Use Tax Fundamentals',
@@ -612,6 +733,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Junior Tax Accountant","Tax Associate"],
   },
   {
     name: 'ASC 740 – Income Tax Accounting',
@@ -626,6 +748,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Accounting Director","Finance Manager","CFO","Account Manager"],
   },
   {
     name: 'Forensic Accounting & Litigation Support',
@@ -640,6 +763,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Finance Manager","Accounting Director"],
   },
   {
     name: 'Cash Flow Statement Preparation',
@@ -654,6 +778,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Junior Accountant","Staff Accountant"],
   },
   {
     name: 'Business Combinations – ASC 805',
@@ -668,6 +793,7 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Active',
     usedInPtc: '-',
+    mappedProfiles: ["Accounting Director","Finance Manager","CFO"],
   },
   {
     name: 'Audit Quality & Peer Review Standards',
@@ -682,11 +808,80 @@ const ASSESSMENT_DATA = [
     sampleQuestion: 'Stored',
     status: 'Inactive',
     usedInPtc: '-',
+    mappedProfiles: ["Audit Manager","Senior Audit Manager","Audit Director"],
   },
-];
+].map(normalizeAssessment);
+
+/* ===== Mapped Profiles Component ===== */
+const MappedProfiles = ({ profiles }) => {
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [popoverStyle, setPopoverStyle] = useState({});
+  const badgeRef = useRef(null);
+  const popoverRef = useRef(null);
+
+  useEffect(() => {
+    if (!popoverOpen) return;
+    const handleOutside = (e) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target) &&
+          badgeRef.current && !badgeRef.current.contains(e.target)) {
+        setPopoverOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, [popoverOpen]);
+
+  const updatePopoverPos = () => {
+    if (!badgeRef.current) return;
+    const r = badgeRef.current.getBoundingClientRect();
+    const openUp = window.innerHeight - r.bottom < 200;
+    setPopoverStyle(
+      openUp
+        ? { position: 'fixed', bottom: window.innerHeight - r.top + 4, left: r.left, zIndex: 9999 }
+        : { position: 'fixed', top: r.bottom + 4, left: r.left, zIndex: 9999 }
+    );
+  };
+
+  if (!profiles || profiles.length === 0) {
+    return <span className="al-profiles-empty">—</span>;
+  }
+
+  const visible = profiles.slice(0, 2);
+  const hidden = profiles.slice(2);
+
+  return (
+    <div className="al-profiles-cell">
+      <div className="al-profiles-chips">
+        {visible.map((p) => (
+          <span key={p} className="al-profile-chip">{p}</span>
+        ))}
+        {hidden.length > 0 && (
+          <span
+            ref={badgeRef}
+            className="al-profile-more"
+            onClick={() => { updatePopoverPos(); setPopoverOpen((v) => !v); }}
+          >
+            +{hidden.length}
+          </span>
+        )}
+      </div>
+      {popoverOpen && ReactDOM.createPortal(
+        <div className="al-profiles-popover" ref={popoverRef} style={popoverStyle}>
+          <div className="al-profiles-popover-title">All Mapped Profiles ({profiles.length})</div>
+          <div className="al-profiles-popover-list">
+            {profiles.map((p) => (
+              <div key={p} className="al-profiles-popover-item">{p}</div>
+            ))}
+          </div>
+        </div>,
+        document.body
+      )}
+    </div>
+  );
+};
 
 /* ===== Multi-Select Dropdown Component ===== */
-const MultiSelectDropdown = ({ label, placeholder, options, selected, onChange, hasSearch }) => {
+const MultiSelectDropdown = ({ label, placeholder, options, selected, onChange, hasSearch, includeSelectAll = true, optionCounts = {} }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const ref = useRef(null);
@@ -702,7 +897,7 @@ const MultiSelectDropdown = ({ label, placeholder, options, selected, onChange, 
   }, []);
 
   const toggleOption = (option) => {
-    if (option === placeholder) {
+    if (includeSelectAll && option === placeholder) {
       onChange(selected.length === options.length ? [] : [...options]);
       return;
     }
@@ -749,18 +944,24 @@ const MultiSelectDropdown = ({ label, placeholder, options, selected, onChange, 
               </div>
             )}
             <div className="qa-multiselect-options">
-              {/* Select All */}
-              <label className="qa-multiselect-option">
-                <span>{placeholder}</span>
-                <input
-                  type="checkbox"
-                  checked={selected.length === options.length}
-                  onChange={() => toggleOption(placeholder)}
-                />
-              </label>
+              {includeSelectAll && (
+                <label className="qa-multiselect-option">
+                  <span className="qa-multiselect-option-text">{placeholder}</span>
+                  <input
+                    type="checkbox"
+                    checked={selected.length === options.length}
+                    onChange={() => toggleOption(placeholder)}
+                  />
+                </label>
+              )}
               {filteredOptions.map((option) => (
                 <label key={option} className="qa-multiselect-option">
-                  <span>{option}</span>
+                  <span className="qa-multiselect-option-text">
+                    <span>{option}</span>
+                    {typeof optionCounts[option] === 'number' && (
+                      <span className="qa-multiselect-option-count">({optionCounts[option]})</span>
+                    )}
+                  </span>
                   <input
                     type="checkbox"
                     checked={selected.includes(option)}
@@ -776,7 +977,7 @@ const MultiSelectDropdown = ({ label, placeholder, options, selected, onChange, 
   );
 };
 
-const QAAssessments = ({ onCreateAssessment }) => {
+const QAAssessments = ({ onCreateAssessment, onUpdateAssessmentStatus, assessments = INITIAL_ASSESSMENT_DATA }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('Commercial Subscription');
   const [perPage, setPerPage] = useState(10);
@@ -785,13 +986,100 @@ const QAAssessments = ({ onCreateAssessment }) => {
   const [selectedCourses, setSelectedCourses] = useState([]);
   const [selectedCreatedBy, setSelectedCreatedBy] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState(['Active']);
+  const [statusChangeTarget, setStatusChangeTarget] = useState(null);
+  const [appliedFilters, setAppliedFilters] = useState({
+    searchTerm: '',
+    selectedQuestionTypes: [],
+    selectedCourses: [],
+    selectedCreatedBy: [],
+    selectedStatus: ['Active'],
+  });
 
   const clearFilters = () => {
     setSelectedQuestionTypes([]);
     setSelectedCourses([]);
     setSelectedCreatedBy([]);
     setSelectedStatus([]);
+    setAppliedFilters({
+      searchTerm: '',
+      selectedQuestionTypes: [],
+      selectedCourses: [],
+      selectedCreatedBy: [],
+      selectedStatus: [],
+    });
   };
+
+  const handleStatusClick = (item, index) => {
+    const transition = getStatusTransitionConfig(item.name, item.status);
+    if (!transition) return;
+    setStatusChangeTarget({
+      index,
+      name: item.name,
+      currentStatus: item.status,
+      ...transition,
+    });
+  };
+
+  const confirmStatusChange = () => {
+    if (!statusChangeTarget || !onUpdateAssessmentStatus) return;
+    onUpdateAssessmentStatus(statusChangeTarget.index, statusChangeTarget.nextStatus);
+    setStatusChangeTarget(null);
+  };
+
+  const handleSearch = () => {
+    setAppliedFilters({
+      searchTerm,
+      selectedQuestionTypes,
+      selectedCourses,
+      selectedCreatedBy,
+      selectedStatus,
+    });
+  };
+
+  const filteredAssessments = assessments.filter((item) => {
+    const normalizedQuestionSummary = formatQuestionSummary(item.questionTypeConfigs).toLowerCase();
+    const searchableText = [
+      item.name,
+      item.createdBy,
+      item.level,
+      item.status,
+      item.topic,
+      item.course,
+      normalizedQuestionSummary,
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+
+    const searchMatches = !appliedFilters.searchTerm.trim()
+      || searchableText.includes(appliedFilters.searchTerm.trim().toLowerCase());
+
+    const assessmentQuestionTypes = getAssessmentQuestionTypes(item);
+    const questionTypeMatches = appliedFilters.selectedQuestionTypes.length === 0
+      || appliedFilters.selectedQuestionTypes.every((type) => assessmentQuestionTypes.includes(type));
+
+    const createdByMatches = appliedFilters.selectedCreatedBy.length === 0
+      || appliedFilters.selectedCreatedBy.includes(item.createdBy);
+
+    const statusMatches = appliedFilters.selectedStatus.length === 0
+      || appliedFilters.selectedStatus.includes(item.status);
+
+    const courseSearchableText = [item.course, item.topic, item.name]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+    const courseMatches = appliedFilters.selectedCourses.length === 0
+      || appliedFilters.selectedCourses.some((course) => courseSearchableText.includes(course.toLowerCase()));
+
+    return searchMatches && questionTypeMatches && createdByMatches && statusMatches && courseMatches;
+  });
+
+  const visibleAssessments = filteredAssessments.slice(0, perPage);
+  const totalPages = Math.max(1, Math.ceil(filteredAssessments.length / perPage));
+  const questionTypeCounts = QUESTION_TYPES.reduce((counts, type) => {
+    counts[type] = assessments.filter((assessment) => getAssessmentQuestionTypes(assessment).includes(type)).length;
+    return counts;
+  }, {});
 
   return (
     <div className="qa-assessments">
@@ -831,6 +1119,7 @@ const QAAssessments = ({ onCreateAssessment }) => {
             selected={selectedQuestionTypes}
             onChange={setSelectedQuestionTypes}
             hasSearch={false}
+            optionCounts={questionTypeCounts}
           />
           <MultiSelectDropdown
             label="Course"
@@ -855,11 +1144,12 @@ const QAAssessments = ({ onCreateAssessment }) => {
             selected={selectedStatus}
             onChange={setSelectedStatus}
             hasSearch={false}
+            includeSelectAll={false}
           />
 
           <div className="qa-filter-actions">
             <button className="clear-all-btn" onClick={clearFilters}>Clear Filter</button>
-            <button className="search-btn">Search</button>
+            <button className="search-btn" onClick={handleSearch}>Search</button>
           </div>
         </div>
 
@@ -892,18 +1182,19 @@ const QAAssessments = ({ onCreateAssessment }) => {
                 <th>Created By</th>
                 <th>Assessment Report</th>
                 <th>Sample Question</th>
+                <th>Mapped Profiles</th>
                 <th>Status</th>
                 <th>Used in ptc</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {ASSESSMENT_DATA.map((item, idx) => (
+              {visibleAssessments.map((item, idx) => (
                 <tr key={idx}>
                   <td>
                     <div className="qa-name-cell">
                       <span className="qa-assessment-name">{item.name}</span>
-                      <span className="qa-question-count">{item.questions}</span>
+                      <span className="qa-question-count">{formatQuestionSummary(item.questionTypeConfigs)}</span>
                     </div>
                   </td>
                   <td>{item.invited}</td>
@@ -914,10 +1205,15 @@ const QAAssessments = ({ onCreateAssessment }) => {
                   <td>{item.createdBy}</td>
                   <td><span className="qa-report-link">{item.assessmentReport}</span></td>
                   <td>{item.sampleQuestion}</td>
+                  <td><MappedProfiles profiles={item.mappedProfiles} /></td>
                   <td>
-                    <span className={`qa-status-badge qa-status--${item.status.toLowerCase()}`}>
+                    <button
+                      type="button"
+                      className={`qa-status-badge qa-status-badge--interactive qa-status--${item.status.toLowerCase()}`}
+                      onClick={() => handleStatusClick(item, assessments.indexOf(item))}
+                    >
                       {item.status}
-                    </span>
+                    </button>
                   </td>
                   <td>{item.usedInPtc}</td>
                   <td>
@@ -930,6 +1226,11 @@ const QAAssessments = ({ onCreateAssessment }) => {
                   </td>
                 </tr>
               ))}
+              {visibleAssessments.length === 0 && (
+                <tr>
+                  <td colSpan={13} className="qa-empty-state">No assessments match the selected filters.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -950,22 +1251,32 @@ const QAAssessments = ({ onCreateAssessment }) => {
               </select>
               <ChevronDown size={14} className="pagination-select-icon" />
             </div>
-            of 10 Events
+            of {filteredAssessments.length} Events
           </div>
 
           <div className="pagination-right">
             <button className="page-btn" disabled><ChevronsLeft size={16} /></button>
             <button className="page-btn" disabled><ChevronLeft size={16} /></button>
             <input type="text" className="page-input" value={currentPage} readOnly />
-            <span className="page-of">of 01 pages</span>
+            <span className="page-of">of {String(totalPages).padStart(2, '0')} pages</span>
             <button className="page-btn" disabled><ChevronRight size={16} /></button>
             <button className="page-btn" disabled><ChevronsRight size={16} /></button>
           </div>
         </div>
       </div>
+      {statusChangeTarget && (
+        <ConfirmModal
+          title={statusChangeTarget.title}
+          message={statusChangeTarget.message}
+          confirmLabel={statusChangeTarget.confirmLabel}
+          cancelLabel="Cancel"
+          variant={statusChangeTarget.variant}
+          onConfirm={confirmStatusChange}
+          onCancel={() => setStatusChangeTarget(null)}
+        />
+      )}
     </div>
   );
 };
 
 export default QAAssessments;
-

@@ -26,8 +26,8 @@ const menuItems = [
 
 const Sidebar = ({ collapsed, onToggleCollapse, onNavChange }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [expandedMenus, setExpandedMenus] = useState({ 1: true });
-  const [activeItem, setActiveItem] = useState('User List');
+  const [expandedMenus, setExpandedMenus] = useState({ 0: true });
+  const [activeItem, setActiveItem] = useState('Questions');
 
   const toggleMenu = (index) => {
     if (collapsed) return;

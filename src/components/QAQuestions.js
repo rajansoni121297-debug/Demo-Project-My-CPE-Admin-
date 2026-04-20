@@ -8,6 +8,7 @@ import CreateMCQ from './CreateMCQ';
 import CreateSimulationJournal from './CreateSimulationJournal';
 import CreateSimulationOptions from './CreateSimulationOptions';
 import CreateSubjective from './CreateSubjective';
+import CreateAIInterview from './CreateAIInterview';
 import './QAQuestions.css';
 
 const PARENT_CATEGORIES = [
@@ -43,8 +44,8 @@ const DOMAINS = ['Accounting', 'Auditing', 'Tax', 'Others'];
 const ADD_QUESTION_TYPES = [
   { key: 'MCQ', label: 'Multiple Choice (MCQ)', desc: 'Standard multiple choice questions' },
   { key: 'Video', label: 'Video Question', desc: 'Video-based assessment questions' },
-  { key: 'AI Video', label: 'AI Video Question', desc: 'AI-generated video questions' },
-  { key: 'Subjective', label: 'Subjective', desc: 'Open-ended written answers' },
+  { key: 'AI Video', label: 'AI Interview', desc: 'AI-powered interview questions' },
+  { key: 'Subjective', label: 'AI Subjective', desc: 'AI-powered written answers' },
   { key: 'Simulation', label: 'Simulation', desc: 'Interactive simulation questions' },
   { key: 'Essay', label: 'Essay', desc: 'Long-form written responses' },
 ];
@@ -190,15 +191,9 @@ const AddQuestionDropdown = ({ onSelectType }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
-  useEffect(() => {
-    const h = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
-    document.addEventListener('mousedown', h);
-    return () => document.removeEventListener('mousedown', h);
-  }, []);
-
   return (
-    <div className="qq-add-wrap" ref={ref}>
-      <button className="qq-add-btn" onClick={() => setOpen(!open)}>
+    <div className="qq-add-wrap" ref={ref} onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+      <button className="qq-add-btn">
         Add Question <ChevronDown size={14} />
       </button>
       {open && (
@@ -395,6 +390,206 @@ const MCQTypeSelection = ({ onBack, onProceed }) => {
   );
 };
 
+/* ===== AI Subjective Type Selection Sub-Screen ===== */
+const SubjectiveTypeSelection = ({ onBack, onProceed }) => {
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const isTemplateUploaded = uploadedFile !== null;
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) setUploadedFile(file);
+    e.target.value = '';
+  };
+
+  const handleRemoveFile = () => {
+    setUploadedFile(null);
+  };
+
+  const handleDownloadTemplate = () => {
+    alert('Downloading AI Subjective template file...');
+  };
+
+  return (
+    <div className="qa-questions">
+      <div className="qq-content">
+        <div className="mcq-sub-header">
+          <button className="mcq-back-btn" onClick={onBack}>
+            <ChevronLeft size={20} />
+          </button>
+          <h1 className="mcq-sub-title">Add Question</h1>
+        </div>
+        <div className="mcq-sub-tag">
+          <Star size={16} className="mcq-sub-tag-icon" />
+          <span>AI Subjective</span>
+        </div>
+
+        <div className="mcq-select-card">
+          <h2 className="mcq-card-title">Choose how you want to add questions?</h2>
+          <p className="mcq-card-desc">
+            Enter the question manually, or upload a template to add questions in bulk.
+          </p>
+
+          {/* Manual Entry Button */}
+          <div className="mcq-type-row">
+            {!isTemplateUploaded && (
+              <button className="mcq-proceed-btn" onClick={() => onProceed('manual')}>
+                Enter Question Manually <span className="mcq-proceed-arrow">→</span>
+              </button>
+            )}
+          </div>
+
+          {/* Divider */}
+          <div className="mcq-divider">
+            <span className="mcq-divider-line" />
+            <span className="mcq-divider-text">OR</span>
+            <span className="mcq-divider-line" />
+          </div>
+
+          {/* Upload Template */}
+          <div className="mcq-upload-section">
+            {!isTemplateUploaded ? (
+              <>
+                <button
+                  className="mcq-upload-btn"
+                  onClick={() => fileInputRef.current.click()}
+                >
+                  <Upload size={16} />
+                  Select Template File
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  style={{ display: 'none' }}
+                  onChange={handleFileSelect}
+                />
+              </>
+            ) : (
+              <div className="mcq-uploaded-file">
+                <div className="mcq-uploaded-file-info">
+                  <Upload size={16} className="mcq-uploaded-file-icon" />
+                  <span className="mcq-uploaded-file-name">{uploadedFile.name}</span>
+                  <span className="mcq-uploaded-file-size">({(uploadedFile.size / 1024).toFixed(1)} KB)</span>
+                </div>
+                <button className="mcq-remove-file-btn" onClick={handleRemoveFile}>
+                  <X size={14} />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Download Template Link */}
+          <button className="mcq-download-link" onClick={handleDownloadTemplate}>
+            Download Template File
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ===== AI Interview Type Selection Sub-Screen ===== */
+const InterviewTypeSelection = ({ onBack, onProceed }) => {
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const isTemplateUploaded = uploadedFile !== null;
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) setUploadedFile(file);
+    e.target.value = '';
+  };
+
+  const handleRemoveFile = () => {
+    setUploadedFile(null);
+  };
+
+  const handleDownloadTemplate = () => {
+    alert('Downloading AI Interview template file...');
+  };
+
+  return (
+    <div className="qa-questions">
+      <div className="qq-content">
+        <div className="mcq-sub-header">
+          <button className="mcq-back-btn" onClick={onBack}>
+            <ChevronLeft size={20} />
+          </button>
+          <h1 className="mcq-sub-title">Add Question</h1>
+        </div>
+        <div className="mcq-sub-tag">
+          <Star size={16} className="mcq-sub-tag-icon" />
+          <span>AI Interview</span>
+        </div>
+
+        <div className="mcq-select-card">
+          <h2 className="mcq-card-title">Choose how you want to add questions?</h2>
+          <p className="mcq-card-desc">
+            Enter the question manually, or upload a template to add questions in bulk.
+          </p>
+
+          {/* Manual Entry Button */}
+          <div className="mcq-type-row">
+            {!isTemplateUploaded && (
+              <button className="mcq-proceed-btn" onClick={() => onProceed('manual')}>
+                Enter Question Manually <span className="mcq-proceed-arrow">→</span>
+              </button>
+            )}
+          </div>
+
+          {/* Divider */}
+          <div className="mcq-divider">
+            <span className="mcq-divider-line" />
+            <span className="mcq-divider-text">OR</span>
+            <span className="mcq-divider-line" />
+          </div>
+
+          {/* Upload Template */}
+          <div className="mcq-upload-section">
+            {!isTemplateUploaded ? (
+              <>
+                <button
+                  className="mcq-upload-btn"
+                  onClick={() => fileInputRef.current.click()}
+                >
+                  <Upload size={16} />
+                  Select Template File
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  style={{ display: 'none' }}
+                  onChange={handleFileSelect}
+                />
+              </>
+            ) : (
+              <div className="mcq-uploaded-file">
+                <div className="mcq-uploaded-file-info">
+                  <Upload size={16} className="mcq-uploaded-file-icon" />
+                  <span className="mcq-uploaded-file-name">{uploadedFile.name}</span>
+                  <span className="mcq-uploaded-file-size">({(uploadedFile.size / 1024).toFixed(1)} KB)</span>
+                </div>
+                <button className="mcq-remove-file-btn" onClick={handleRemoveFile}>
+                  <X size={14} />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Download Template Link */}
+          <button className="mcq-download-link" onClick={handleDownloadTemplate}>
+            Download Template File
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 /* ===== Confirm Modal ===== */
 const ConfirmModal = ({ title, message, confirmLabel, variant, onConfirm, onCancel }) => (
   <div className="qq-modal-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) onCancel(); }}>
@@ -569,6 +764,8 @@ const QAQuestions = ({ showToast }) => {
       setSubScreen('createSimulationOptions');
     } else if (q.type === 'Subjective' || q.type === 'Essay') {
       setSubScreen('createSubjective');
+    } else if (q.type === 'AI Video') {
+      setSubScreen('createAIInterview');
     } else {
       setIsEditing(false);
       setEditingQuestion(null);
@@ -584,7 +781,9 @@ const QAQuestions = ({ showToast }) => {
     } else if (type === 'Simulation') {
       setSubScreen('simulation');
     } else if (type === 'Subjective' || type === 'Essay') {
-      setSubScreen('createSubjective');
+      setSubScreen('subjective');
+    } else if (type === 'AI Video') {
+      setSubScreen('aiInterview');
     }
   };
 
@@ -657,6 +856,20 @@ const QAQuestions = ({ showToast }) => {
     if (showToast) showToast('Question created successfully!');
   };
 
+  const handleAIInterviewSave = (data) => {
+    const nextId = `Q${String(QUESTIONS_DATA.length + savedQuestions.length + 1).padStart(8, '0')}`;
+    setSavedQuestions((prev) => [{
+      id: nextId, name: data.interviewName, type: 'AI Video',
+      level: data.difficulty, domain: '-', parentCategory: '-',
+      childCategory: '-', createdBy: 'Admin', status: 'Active',
+      fileUploadAllowed: 'No', accountingJournalBased: 'No',
+      totalQuestions: data.totalQuestions,
+    }, ...prev]);
+    setSubScreen(null);
+    setIsEditing(false);
+    if (showToast) showToast('AI Interview question created successfully!');
+  };
+
   const handleBulkDelete = () => {
     setPendingAction({ type: 'bulkDelete' });
   };
@@ -676,11 +889,41 @@ const QAQuestions = ({ showToast }) => {
     setSubScreen(isEditing ? null : fallbackScreen);
   };
 
+  if (subScreen === 'aiInterview') {
+    return (
+      <InterviewTypeSelection
+        onBack={() => { setSubScreen(null); }}
+        onProceed={() => { setSubScreen('createAIInterview'); }}
+      />
+    );
+  }
+
+  if (subScreen === 'createAIInterview') {
+    return (
+      <CreateAIInterview
+        key={editingQuestion?.id || 'new-aiinterview'}
+        onBack={() => goBack(isEditing ? null : 'aiInterview')}
+        onSave={handleAIInterviewSave}
+        isEditing={isEditing}
+        initialData={editingQuestion}
+      />
+    );
+  }
+
+  if (subScreen === 'subjective') {
+    return (
+      <SubjectiveTypeSelection
+        onBack={() => { setSubScreen(null); }}
+        onProceed={() => { setSubScreen('createSubjective'); }}
+      />
+    );
+  }
+
   if (subScreen === 'createSubjective') {
     return (
       <CreateSubjective
         key={editingQuestion?.id || 'new-subjective'}
-        onBack={() => goBack(null)}
+        onBack={() => goBack(isEditing ? null : 'subjective')}
         onSave={handleSubjectiveSave}
         isEditing={isEditing}
         initialData={editingQuestion}

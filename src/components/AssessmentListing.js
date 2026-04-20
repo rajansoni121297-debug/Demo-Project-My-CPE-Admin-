@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import {
   Search,
   ChevronDown,
@@ -21,6 +22,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 380, detail: '295 External / 85 Teams' },
     engagementPercent: 84,
     status: 'Active',
+    mappedProfiles: ['Staff Accountant', 'Junior Accountant'],
   },
   {
     name: 'Accounting Fundamentals fo...',
@@ -33,6 +35,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 195, detail: '148 External / 47 Teams' },
     engagementPercent: 93,
     status: 'Active',
+    mappedProfiles: ['Audit Associate', 'Audit Senior', 'Audit Supervisor', 'Audit Manager'],
   },
   {
     name: 'Ethics and Professional Con...',
@@ -45,6 +48,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 720, detail: '535 External / 185 Teams' },
     engagementPercent: 90,
     status: 'Active',
+    mappedProfiles: ['Tax Manager', 'Tax Director', 'Senior Tax Manager', 'Tax Supervisor', 'Partner – Tax Advisory & Compliance', 'Senior Tax Accountant', 'Junior Tax Accountant', 'Tax Associate', 'Tax Intern', 'CPA'],
   },
   {
     name: 'Emerging Trends in Financial...',
@@ -57,6 +61,7 @@ const ASSESSMENT_DATA = [
     completions: { count: '-', detail: '' },
     engagementPercent: null,
     status: 'Draft',
+    mappedProfiles: [],
   },
   {
     name: 'Consolidated Financial State...',
@@ -69,6 +74,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 105, detail: '77 External / 28 Teams' },
     engagementPercent: 88,
     status: 'Inactive',
+    mappedProfiles: ['Accounting Intern', 'Staff Accountant', 'Junior Accountant'],
   },
   {
     name: 'Lease Accounting and Repor...',
@@ -81,6 +87,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 140, detail: '103 External / 37 Teams' },
     engagementPercent: 93,
     status: 'Active',
+    mappedProfiles: ['Senior Accountant', 'Account Manager', 'Account Supervisor', 'Finance Manager', 'Accounting Director', 'CFO'],
   },
   {
     name: 'Individual Income Tax – Form 1040',
@@ -93,6 +100,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 280, detail: '205 External / 75 Teams' },
     engagementPercent: 90,
     status: 'Active',
+    mappedProfiles: ['Junior Tax Accountant', 'Tax Associate', 'Tax Intern'],
   },
   {
     name: 'Partnership Tax – Schedule K-1',
@@ -105,6 +113,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 162, detail: '118 External / 44 Teams' },
     engagementPercent: 90,
     status: 'Active',
+    mappedProfiles: ['Tax Manager', 'Tax Supervisor', 'Senior Tax Accountant'],
   },
   {
     name: 'Corporate Tax – Form 1120',
@@ -117,6 +126,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 210, detail: '153 External / 57 Teams' },
     engagementPercent: 88,
     status: 'Active',
+    mappedProfiles: ['Tax Director', 'Senior Tax Manager', 'Tax Manager', 'Partner – Tax Advisory & Compliance'],
   },
   {
     name: 'Estate & Gift Tax Fundamentals',
@@ -129,6 +139,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 80, detail: '58 External / 22 Teams' },
     engagementPercent: 84,
     status: 'Active',
+    mappedProfiles: ['Tax Director', 'Senior Tax Manager'],
   },
   {
     name: 'Payroll Tax Compliance',
@@ -141,6 +152,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 355, detail: '260 External / 95 Teams' },
     engagementPercent: 91,
     status: 'Active',
+    mappedProfiles: ['Tax Associate', 'Junior Tax Accountant', 'Tax Intern', 'Staff Accountant', 'Accounting Intern'],
   },
   {
     name: 'Multistate Tax Nexus & Apportionment',
@@ -153,6 +165,7 @@ const ASSESSMENT_DATA = [
     completions: { count: '-', detail: '' },
     engagementPercent: null,
     status: 'Draft',
+    mappedProfiles: [],
   },
   {
     name: 'Sales & Use Tax Fundamentals',
@@ -165,6 +178,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 248, detail: '180 External / 68 Teams' },
     engagementPercent: 90,
     status: 'Active',
+    mappedProfiles: ['Junior Tax Accountant', 'Tax Associate'],
   },
   {
     name: 'Tax Credits & Deductions Overview',
@@ -177,6 +191,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 432, detail: '314 External / 118 Teams' },
     engagementPercent: 90,
     status: 'Active',
+    mappedProfiles: ['Tax Intern', 'Tax Associate', 'Junior Tax Accountant', 'Tax Supervisor', 'Senior Tax Accountant', 'Tax Manager'],
   },
   {
     name: 'International Tax – GILTI & BEAT',
@@ -189,6 +204,7 @@ const ASSESSMENT_DATA = [
     completions: { count: '-', detail: '' },
     engagementPercent: null,
     status: 'Draft',
+    mappedProfiles: [],
   },
   {
     name: 'Revenue Recognition – ASC 606',
@@ -201,6 +217,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 295, detail: '215 External / 80 Teams' },
     engagementPercent: 92,
     status: 'Active',
+    mappedProfiles: ['Account Manager', 'Senior Accountant', 'Account Supervisor'],
   },
   {
     name: 'Lease Accounting – ASC 842',
@@ -213,6 +230,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 207, detail: '150 External / 57 Teams' },
     engagementPercent: 90,
     status: 'Active',
+    mappedProfiles: ['Account Manager', 'Finance Manager', 'Senior Accountant'],
   },
   {
     name: 'Financial Statement Analysis Basics',
@@ -225,6 +243,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 486, detail: '354 External / 132 Teams' },
     engagementPercent: 90,
     status: 'Active',
+    mappedProfiles: ['Staff Accountant', 'Junior Accountant', 'Accounting Intern'],
   },
   {
     name: 'Consolidations & Intercompany Elim...',
@@ -237,6 +256,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 128, detail: '93 External / 35 Teams' },
     engagementPercent: 88,
     status: 'Active',
+    mappedProfiles: ['Accounting Director', 'Finance Manager', 'CFO', 'Partner – Accounting & Advisory'],
   },
   {
     name: 'Business Combinations – ASC 805',
@@ -249,6 +269,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 95, detail: '69 External / 26 Teams' },
     engagementPercent: 86,
     status: 'Active',
+    mappedProfiles: ['Accounting Director', 'Finance Manager', 'Partner – Accounting & Advisory', 'CFO'],
   },
   {
     name: 'Government & Nonprofit Accounting',
@@ -261,6 +282,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 150, detail: '109 External / 41 Teams' },
     engagementPercent: 88,
     status: 'Active',
+    mappedProfiles: ['Senior Accountant', 'Account Supervisor'],
   },
   {
     name: 'Managerial Accounting & Cost Analysis',
@@ -273,6 +295,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 324, detail: '236 External / 88 Teams' },
     engagementPercent: 90,
     status: 'Active',
+    mappedProfiles: ['Staff Accountant', 'Junior Accountant', 'Accounting Intern', 'Account Manager'],
   },
   {
     name: 'Cash Flow Statement Preparation',
@@ -285,6 +308,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 369, detail: '268 External / 101 Teams' },
     engagementPercent: 90,
     status: 'Active',
+    mappedProfiles: ['Junior Accountant', 'Staff Accountant'],
   },
   {
     name: 'ASC 740 – Income Tax Accounting',
@@ -297,6 +321,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 110, detail: '80 External / 30 Teams' },
     engagementPercent: 88,
     status: 'Active',
+    mappedProfiles: ['Accounting Director', 'Finance Manager', 'CFO', 'Partner – Accounting & Advisory', 'Account Manager'],
   },
   {
     name: 'Forensic Accounting & Litigation...',
@@ -309,6 +334,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 70, detail: '51 External / 19 Teams' },
     engagementPercent: 85,
     status: 'Active',
+    mappedProfiles: ['Finance Manager', 'Accounting Director'],
   },
   {
     name: 'Risk-Based Audit Approach',
@@ -321,6 +347,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 175, detail: '127 External / 48 Teams' },
     engagementPercent: 90,
     status: 'Active',
+    mappedProfiles: ['Audit Manager', 'Audit Supervisor', 'Audit Senior'],
   },
   {
     name: 'Internal Controls & COSO Framework',
@@ -333,6 +360,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 165, detail: '120 External / 45 Teams' },
     engagementPercent: 89,
     status: 'Active',
+    mappedProfiles: ['Assurance Partner', 'Audit Director', 'Senior Audit Manager', 'Audit Manager'],
   },
   {
     name: 'Fraud Detection & Prevention',
@@ -345,6 +373,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 234, detail: '171 External / 63 Teams' },
     engagementPercent: 90,
     status: 'Active',
+    mappedProfiles: ['Assurance Partner', 'Audit Director', 'Senior Audit Manager', 'Audit Manager', 'Audit Supervisor', 'Audit Senior', 'Audit Staff', 'Audit Associate'],
   },
   {
     name: 'Audit Sampling & Evidence',
@@ -357,6 +386,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 125, detail: '91 External / 34 Teams' },
     engagementPercent: 89,
     status: 'Active',
+    mappedProfiles: ['Audit Senior', 'Audit Supervisor'],
   },
   {
     name: 'IT Audit & General Controls',
@@ -369,6 +399,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 148, detail: '108 External / 40 Teams' },
     engagementPercent: 90,
     status: 'Active',
+    mappedProfiles: ['Audit Manager', 'Audit Supervisor', 'Audit Senior', 'Audit Staff'],
   },
   {
     name: 'Auditing Employee Benefit Plans',
@@ -381,6 +412,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 91, detail: '66 External / 25 Teams' },
     engagementPercent: 87,
     status: 'Active',
+    mappedProfiles: ['Senior Audit Manager', 'Audit Director'],
   },
   {
     name: 'Compilation & Review Engagements',
@@ -393,6 +425,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 216, detail: '157 External / 59 Teams' },
     engagementPercent: 90,
     status: 'Active',
+    mappedProfiles: ['Audit Staff', 'Audit Associate'],
   },
   {
     name: 'Group Audits & Component Auditors',
@@ -405,6 +438,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 55, detail: '40 External / 15 Teams' },
     engagementPercent: 85,
     status: 'Inactive',
+    mappedProfiles: ['Assurance Partner', 'Audit Director'],
   },
   {
     name: 'Audit Quality & Peer Review Standards',
@@ -417,6 +451,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 107, detail: '78 External / 29 Teams' },
     engagementPercent: 88,
     status: 'Active',
+    mappedProfiles: ['Audit Manager', 'Senior Audit Manager', 'Audit Director'],
   },
   {
     name: 'Qualified Business Income Deduction',
@@ -429,6 +464,7 @@ const ASSESSMENT_DATA = [
     completions: { count: 171, detail: '124 External / 47 Teams' },
     engagementPercent: 90,
     status: 'Active',
+    mappedProfiles: ['Tax Manager', 'Tax Supervisor', 'Senior Tax Accountant'],
   },
   {
     name: 'S-Corporation Tax – Form 1120-S',
@@ -441,8 +477,79 @@ const ASSESSMENT_DATA = [
     completions: { count: 137, detail: '99 External / 38 Teams' },
     engagementPercent: 90,
     status: 'Active',
+    mappedProfiles: ['Tax Supervisor', 'Tax Manager', 'Senior Tax Accountant'],
   },
 ];
+
+const VISIBLE_COUNT = 2;
+
+const MappedProfiles = ({ profiles }) => {
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [popoverStyle, setPopoverStyle] = useState({});
+  const badgeRef = useRef(null);
+  const popoverRef = useRef(null);
+
+  useEffect(() => {
+    if (!popoverOpen) return;
+    const handleOutside = (e) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target) &&
+          badgeRef.current && !badgeRef.current.contains(e.target)) {
+        setPopoverOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, [popoverOpen]);
+
+  const updatePopoverPos = () => {
+    if (!badgeRef.current) return;
+    const r = badgeRef.current.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - r.bottom;
+    const openUp = spaceBelow < 200;
+    setPopoverStyle(
+      openUp
+        ? { position: 'fixed', bottom: window.innerHeight - r.top + 4, left: r.left, zIndex: 9999 }
+        : { position: 'fixed', top: r.bottom + 4, left: r.left, zIndex: 9999 }
+    );
+  };
+
+  if (!profiles || profiles.length === 0) {
+    return <span className="al-profiles-empty">—</span>;
+  }
+
+  const visible = profiles.slice(0, VISIBLE_COUNT);
+  const hidden = profiles.slice(VISIBLE_COUNT);
+
+  return (
+    <div className="al-profiles-cell">
+      <div className="al-profiles-chips">
+        {visible.map((p) => (
+          <span key={p} className="al-profile-chip">{p}</span>
+        ))}
+        {hidden.length > 0 && (
+          <span
+            ref={badgeRef}
+            className="al-profile-more"
+            onClick={() => { updatePopoverPos(); setPopoverOpen((v) => !v); }}
+          >
+            +{hidden.length}
+          </span>
+        )}
+      </div>
+      {popoverOpen && ReactDOM.createPortal(
+        <div className="al-profiles-popover" ref={popoverRef} style={popoverStyle}>
+          <div className="al-profiles-popover-title">All Mapped Profiles ({profiles.length})</div>
+          <div className="al-profiles-popover-list">
+            {profiles.map((p) => (
+              <div key={p} className="al-profiles-popover-item">{p}</div>
+            ))}
+          </div>
+        </div>,
+        document.body
+      )}
+    </div>
+  );
+};
 
 const StatusBadge = ({ status }) => {
   const classMap = {
@@ -613,6 +720,7 @@ const AssessmentListing = ({ onViewAssigned, onViewCompletions }) => {
                 <th>Assigned</th>
                 <th>Completions</th>
                 <th>Engagement %</th>
+                <th>Mapped Profiles</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -656,6 +764,7 @@ const AssessmentListing = ({ onViewAssigned, onViewCompletions }) => {
                     </div>
                   </td>
                   <td><EngagementBar percent={item.engagementPercent} /></td>
+                  <td><MappedProfiles profiles={item.mappedProfiles} /></td>
                   <td><StatusBadge status={item.status} /></td>
                 </tr>
               ))}

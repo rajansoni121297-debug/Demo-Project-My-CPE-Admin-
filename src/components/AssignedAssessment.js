@@ -131,7 +131,7 @@ const AssignedAssessment = ({ user, onBack }) => {
           <button className="aa-back-btn" onClick={onBack}>
             <ArrowLeft size={20} strokeWidth={2} />
           </button>
-          <h1 className="aa-title">Assigned Assessment</h1>
+          <h1 className="aa-title">Assigned Assessment{user?.name ? ` (${user.name})` : ''}</h1>
         </div>
 
         <div className="aa-header-right">
