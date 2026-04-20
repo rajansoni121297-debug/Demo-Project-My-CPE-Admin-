@@ -44,7 +44,7 @@
   border: 1px solid #e0e4ea;
   border-radius: 8px;
   background: #fff;
-  color: #6366f1;
+  color: #7162EA;
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -107,7 +107,7 @@
 }
 
 .aa-filter-btn:hover {
-  border-color: #6366f1;
+  border-color: #7162EA;
 }
 
 .aa-filter-btn--icon {
@@ -181,7 +181,7 @@
 
 /* Feedback link */
 .aa-feedback-link {
-  color: #6366f1;
+  color: #7162EA;
   font-weight: 500;
   cursor: pointer;
 }
@@ -207,7 +207,7 @@
 
 .aa-download-btn:hover {
   background: #f3f4f6;
-  color: #6366f1;
+  color: #7162EA;
 }
 
 /* ===== Responsive ===== */

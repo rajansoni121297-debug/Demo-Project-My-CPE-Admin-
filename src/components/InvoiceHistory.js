@@ -75,7 +75,7 @@ const InvoiceHistory = ({ user, onBack }) => {
           <button className="ih-back-btn" onClick={onBack}>
             <ArrowLeft size={20} strokeWidth={2} />
           </button>
-          <h1 className="ih-title">Invoice History</h1>
+          <h1 className="ih-title">Invoice History{user?.name ? ` (${user.name})` : ''}</h1>
         </div>
 
         <div className="ih-header-right">

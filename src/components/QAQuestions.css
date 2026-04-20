@@ -1,0 +1,922 @@
+/* ===== QA Questions ===== */
+.qa-questions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.qq-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 32px 0;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.qq-sticky {
+  flex-shrink: 0;
+  z-index: 10;
+  background-color: #f8f9fb;
+  padding-top: 24px;
+}
+
+.qq-table-area {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e8eaed;
+}
+
+/* Header */
+.qq-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.qq-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qq-star-icon { color: #7162EA; }
+
+.qq-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a2e;
+  white-space: nowrap;
+}
+
+.qq-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+/* Delete button */
+.qq-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 18px;
+  border: 1px solid #e0e4ea;
+  border-radius: 8px;
+  background: #fff;
+  color: #9ca3af;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: not-allowed;
+  transition: all 0.15s;
+}
+
+.qq-delete-btn--active {
+  border-color: #dc2626;
+  background: #dc2626;
+  color: #fff;
+  cursor: pointer;
+}
+
+.qq-delete-btn--active:hover {
+  background: #b91c1c;
+}
+
+/* Add Question dropdown */
+.qq-add-wrap {
+  position: relative;
+}
+
+.qq-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 8px;
+  background: #7162EA;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.qq-add-btn:hover {
+  background: #5f52d4;
+}
+
+.qq-add-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 280px;
+  background: #fff;
+  border: 1px solid #e0e4ea;
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  z-index: 70;
+  overflow: hidden;
+  animation: qqDropIn 0.15s ease-out;
+}
+
+@keyframes qqDropIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.qq-add-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-bottom: 1px solid #f0f1f3;
+}
+
+.qq-add-item:last-child { border-bottom: none; }
+
+.qq-add-item:hover {
+  background: #f0edff;
+}
+
+.qq-add-item-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.qq-add-item-desc {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* Filters */
+.qq-filters {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 16px;
+}
+
+.qq-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  position: relative;
+}
+
+.qq-filter-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.qq-filter-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+/* Parent/Child dropdown */
+.qq-dropdown-wrap { position: relative; }
+
+.qq-dropdown-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #e0e4ea;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+  outline: none;
+  text-align: left;
+  transition: border-color 0.15s;
+}
+
+.qq-dropdown-btn:hover,
+.qq-dropdown-btn--open {
+  border-color: #7162EA;
+}
+
+.qq-placeholder { color: #9ca3af; }
+
+.qq-chev {
+  color: #9ca3af;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+
+.qq-chev--open { transform: rotate(180deg); }
+
+.qq-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  min-width: 240px;
+  background: #fff;
+  border: 1px solid #7162EA;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 60;
+  overflow: hidden;
+}
+
+.qq-dropdown-search { padding: 8px; }
+
+.qq-dropdown-search-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #e0e4ea;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #374151;
+  outline: none;
+}
+
+.qq-dropdown-search-input:focus { border-color: #7162EA; }
+
+.qq-dropdown-list {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.qq-dropdown-item {
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.qq-dropdown-item:hover { background: #f8f9fb; }
+
+.qq-dropdown-item--header {
+  color: #7162EA;
+  font-weight: 500;
+  border-bottom: 1px solid #e0e4ea;
+}
+
+.qq-dropdown-item--sel {
+  background: #f0edff;
+  color: #7162EA;
+  font-weight: 500;
+}
+
+.qq-dropdown-empty {
+  padding: 16px 14px;
+  font-size: 13px;
+  color: #9ca3af;
+  text-align: center;
+}
+
+/* Table */
+.qq-table { min-width: 1400px; }
+
+.qq-table th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 2;
+  font-size: 12px;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 12px 16px;
+  border-bottom: 2px solid #e8eaed;
+  white-space: nowrap;
+}
+
+.qq-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #7162EA;
+  cursor: pointer;
+}
+
+.qq-row--checked {
+  background: #f0edff !important;
+}
+
+.qq-id {
+  font-family: monospace;
+  font-size: 12px;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.qq-name {
+  color: #7162EA;
+  font-weight: 500;
+  max-width: 320px;
+}
+
+/* Status badge */
+.qq-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #16a34a;
+  color: #fff;
+}
+
+/* Actions */
+.qq-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.qq-actions--disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.qq-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.qq-action-btn--edit { background: #dbeafe; color: #2563eb; }
+.qq-action-btn--edit:hover { background: #bfdbfe; }
+.qq-action-btn--view { background: #ecfdf5; color: #16a34a; }
+.qq-action-btn--view:hover { background: #dcfce7; }
+.qq-action-btn--delete { background: #fce4ec; color: #1a1a2e; }
+.qq-action-btn--delete:hover { background: #f8bbd0; }
+
+/* ===== MCQ Type Selection Sub-Screen ===== */
+.mcq-sub-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 24px;
+  margin-bottom: 4px;
+}
+
+.mcq-back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.mcq-back-btn:hover {
+  background: #f0f1f3;
+}
+
+.mcq-sub-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.mcq-sub-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 32px;
+  padding-left: 40px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #7162EA;
+}
+
+.mcq-sub-tag-icon {
+  color: #7162EA;
+}
+
+/* Selection Card */
+.mcq-select-card {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 40px 48px;
+  background: #fff;
+  border: 1px solid #e0e4ea;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mcq-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a2e;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.mcq-card-desc {
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
+  line-height: 1.5;
+  margin-bottom: 28px;
+  max-width: 400px;
+}
+
+/* MCQ Type Row (dropdown + clear) */
+.mcq-type-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.mcq-clear-btn {
+  border: none;
+  background: none;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.mcq-clear-btn:hover {
+  color: #dc2626;
+  text-decoration: underline;
+}
+
+/* MCQ Type Dropdown */
+.mcq-type-dropdown {
+  flex: 1;
+  position: relative;
+}
+
+.mcq-type-dropdown--disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.mcq-type-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid #e0e4ea;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+  outline: none;
+  text-align: left;
+  transition: border-color 0.15s;
+}
+
+.mcq-type-btn:hover,
+.mcq-type-btn--open {
+  border-color: #7162EA;
+}
+
+.mcq-type-btn--disabled {
+  cursor: not-allowed;
+  background: #f8f9fb;
+}
+
+.mcq-type-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #7162EA;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 60;
+  overflow: hidden;
+}
+
+/* Divider */
+.mcq-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 400px;
+  margin: 24px 0;
+}
+
+.mcq-divider-line {
+  flex: 1;
+  height: 1px;
+  background: #e0e4ea;
+}
+
+.mcq-divider-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+/* Upload Section */
+.mcq-upload-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  transition: opacity 0.2s;
+}
+
+.mcq-upload-section--disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.mcq-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 24px;
+  border: 1px solid #7162EA;
+  border-radius: 8px;
+  background: #fff;
+  color: #7162EA;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.mcq-upload-btn:hover {
+  background: #f0edff;
+}
+
+.mcq-upload-btn--disabled {
+  cursor: not-allowed;
+  border-color: #d1d5db;
+  color: #9ca3af;
+}
+
+/* Uploaded File */
+.mcq-uploaded-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 14px;
+  background: #f0edff;
+  border: 1px solid #7162EA;
+  border-radius: 8px;
+  gap: 12px;
+}
+
+.mcq-uploaded-file-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.mcq-uploaded-file-icon {
+  color: #7162EA;
+  flex-shrink: 0;
+}
+
+.mcq-uploaded-file-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1a1a2e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mcq-uploaded-file-size {
+  font-size: 12px;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.mcq-remove-file-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #dc2626;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.mcq-remove-file-btn:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+/* Download Template */
+.mcq-download-link {
+  margin-top: 12px;
+  border: none;
+  background: none;
+  color: #7162EA;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.mcq-download-link:hover {
+  color: #5f52d4;
+  text-decoration: underline;
+}
+
+/* Proceed Button (inside card) */
+.mcq-proceed-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 400px;
+  height: 48px;
+  margin-top: 28px;
+  border: none;
+  border-radius: 8px;
+  background: #7162EA;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.mcq-proceed-btn:hover {
+  background: #5f52d4;
+}
+
+.mcq-proceed-arrow {
+  font-size: 18px;
+}
+
+/* Pagination anchored at bottom of flex column */
+.qq-content .pagination {
+  flex-shrink: 0;
+  padding: 16px 0 16px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1200px) {
+  .qq-header { flex-direction: column; align-items: flex-start; }
+  .qq-header-right { margin-left: 0; width: 100%; flex-wrap: wrap; }
+  .qq-filters { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 900px) {
+  .qq-filters { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .qq-title { font-size: 18px; }
+  .qq-content { padding: 0 20px 20px; }
+}
+
+
+/* ===== Simulation Type Selection ===== */
+.sim-type-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.sim-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 20px 24px;
+  border: 2px solid #e0e4ea;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.18s;
+}
+
+.sim-type-btn:hover {
+  border-color: #7162EA;
+  background: #f8f6ff;
+  box-shadow: 0 4px 16px rgba(113, 98, 234, 0.12);
+}
+
+.sim-type-btn--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sim-type-btn--disabled:hover {
+  border-color: #e0e4ea;
+  background: #fff;
+  box-shadow: none;
+}
+
+.sim-type-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.sim-type-desc {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ===== Status Badge — clickable ===== */
+.qq-status-badge--clickable {
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s;
+}
+
+.qq-status-badge--clickable:hover {
+  opacity: 0.8;
+  transform: scale(1.03);
+}
+
+.qq-status-badge--active {
+  background: #dcfce7;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.qq-status-badge--inactive {
+  background: #fef9c3;
+  color: #a16207;
+  border: 1px solid #fde68a;
+}
+
+/* ===== Confirm Modal ===== */
+.qq-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+}
+
+.qq-modal {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+  width: 440px;
+  max-width: 90vw;
+}
+
+.qq-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px 14px;
+  border-bottom: 1px solid #f0f1f3;
+}
+
+.qq-modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.qq-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 0;
+  transition: all 0.15s;
+}
+
+.qq-modal-close:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.qq-modal-body {
+  padding: 20px 24px 16px;
+}
+
+.qq-modal-message {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.qq-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 24px 20px;
+}
+
+.qq-modal-btn {
+  height: 38px;
+  padding: 0 22px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+}
+
+.qq-modal-btn--cancel {
+  background: #fff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.qq-modal-btn--cancel:hover {
+  background: #f9fafb;
+}
+
+.qq-modal-btn--danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+.qq-modal-btn--danger:hover {
+  background: #b91c1c;
+}
+
+.qq-modal-btn--warning {
+  background: #d97706;
+  color: #fff;
+}
+
+.qq-modal-btn--warning:hover {
+  background: #b45309;
+}
+
+.qq-modal-btn--success {
+  background: #16a34a;
+  color: #fff;
+}
+
+.qq-modal-btn--success:hover {
+  background: #15803d;
+}
