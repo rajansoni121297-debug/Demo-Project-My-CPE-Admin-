@@ -272,7 +272,9 @@ const CreateAssessment = ({ onBack, onSuccess }) => {
         if (!c.passingPercent) e[`${qt}_passing`] = true;
         if (!c.duration) e[`${qt}_duration`] = true;
         if (!c.noOfQues) e[`${qt}_noOfQues`] = true;
-        if (!c.reportWeightage) e[`${qt}_reportWeightage`] = true;
+        if (c.reportWeightage === '' || c.reportWeightage === null || c.reportWeightage === undefined) {
+          e[`${qt}_reportWeightage`] = true;
+        }
       }
     });
     const reportWeightageError = getReportWeightageError(selectedQTypes, qTypeConfigs);

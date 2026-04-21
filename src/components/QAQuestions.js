@@ -9,6 +9,8 @@ import CreateSimulationJournal from './CreateSimulationJournal';
 import CreateSimulationOptions from './CreateSimulationOptions';
 import CreateSubjective from './CreateSubjective';
 import CreateAIInterview from './CreateAIInterview';
+import CreateVideoQuestion from './CreateVideoQuestion';
+import CreateEssayQuestion from './CreateEssayQuestion';
 import './QAQuestions.css';
 
 const PARENT_CATEGORIES = [
@@ -657,7 +659,7 @@ const QAQuestions = ({ showToast }) => {
   const [selectedDomains, setSelectedDomains] = useState([]);
   const [checkedRows, setCheckedRows] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
-  const [subScreen, setSubScreen] = useState(null); // null | 'mcq' | 'createMCQ' | 'simulation' | 'createSimulationJournal' | 'createSimulationOptions' | 'createSubjective'
+  const [subScreen, setSubScreen] = useState(null); // null | 'mcq' | 'createMCQ' | 'simulation' | 'createSimulationJournal' | 'createSimulationOptions' | 'subjective' | 'createSubjective' | 'createVideoQuestion' | 'createEssayQuestion' | 'aiInterview' | 'createAIInterview'
   const [selectedMCQTypeForCreate, setSelectedMCQTypeForCreate] = useState('');
   const [savedQuestions, setSavedQuestions] = useState([]);
   const [deletedIds, setDeletedIds] = useState([]);
@@ -700,7 +702,13 @@ const QAQuestions = ({ showToast }) => {
 
   const getStatus = (q) => questionStatuses[q.id] ?? q.status;
 
-  const allQuestions = [...savedQuestions, ...QUESTIONS_DATA].filter((q) => !deletedIds.includes(q.id));
+  const seenQuestionIds = new Set();
+  const allQuestions = [...savedQuestions, ...QUESTIONS_DATA].filter((q) => {
+    if (deletedIds.includes(q.id)) return false;
+    if (seenQuestionIds.has(q.id)) return false;
+    seenQuestionIds.add(q.id);
+    return true;
+  });
 
   const displayQuestions = allQuestions.filter((q) => {
     const af = appliedFilters;
@@ -763,7 +771,9 @@ const QAQuestions = ({ showToast }) => {
     } else if (q.type === 'Simulation' && q.subType === 'options') {
       setSubScreen('createSimulationOptions');
     } else if (q.type === 'Subjective' || q.type === 'Essay') {
-      setSubScreen('createSubjective');
+      setSubScreen(q.type === 'Essay' ? 'createEssayQuestion' : 'createSubjective');
+    } else if (q.type === 'Video') {
+      setSubScreen('createVideoQuestion');
     } else if (q.type === 'AI Video') {
       setSubScreen('createAIInterview');
     } else {
@@ -780,11 +790,21 @@ const QAQuestions = ({ showToast }) => {
       setSubScreen('mcq');
     } else if (type === 'Simulation') {
       setSubScreen('simulation');
-    } else if (type === 'Subjective' || type === 'Essay') {
+    } else if (type === 'Subjective') {
       setSubScreen('subjective');
+    } else if (type === 'Essay') {
+      setSubScreen('createEssayQuestion');
+    } else if (type === 'Video') {
+      setSubScreen('createVideoQuestion');
     } else if (type === 'AI Video') {
       setSubScreen('aiInterview');
     }
+  };
+
+  const getNextQuestionId = () => `Q${String(QUESTIONS_DATA.length + savedQuestions.length + 1).padStart(8, '0')}`;
+
+  const upsertSavedQuestion = (question) => {
+    setSavedQuestions((prev) => [question, ...prev.filter((item) => item.id !== question.id)]);
   };
 
   const handleMCQSave = (questionData) => {
@@ -844,30 +864,86 @@ const QAQuestions = ({ showToast }) => {
   };
 
   const handleSubjectiveSave = (data) => {
-    const nextId = `Q${String(QUESTIONS_DATA.length + savedQuestions.length + 1).padStart(8, '0')}`;
-    setSavedQuestions((prev) => [{
+    const nextId = isEditing && editingQuestion ? editingQuestion.id : getNextQuestionId();
+    upsertSavedQuestion({
       id: nextId, name: data.questionName, type: 'Subjective',
       level: data.difficulty, domain: '-', parentCategory: data.category,
-      childCategory: '-', createdBy: 'Admin', status: 'Active',
+      childCategory: '-', createdBy: editingQuestion?.createdBy || 'Admin', status: isEditing && editingQuestion ? getStatus(editingQuestion) : 'Active',
       fileUploadAllowed: data.allowUpload ? 'Yes' : 'No', accountingJournalBased: 'No',
-    }, ...prev]);
+    });
     setSubScreen(null);
     setIsEditing(false);
+    setEditingQuestion(null);
     if (showToast) showToast('Question created successfully!');
   };
 
   const handleAIInterviewSave = (data) => {
-    const nextId = `Q${String(QUESTIONS_DATA.length + savedQuestions.length + 1).padStart(8, '0')}`;
-    setSavedQuestions((prev) => [{
+    const nextId = isEditing && editingQuestion ? editingQuestion.id : getNextQuestionId();
+    upsertSavedQuestion({
       id: nextId, name: data.interviewName, type: 'AI Video',
       level: data.difficulty, domain: '-', parentCategory: '-',
-      childCategory: '-', createdBy: 'Admin', status: 'Active',
+      childCategory: '-', createdBy: editingQuestion?.createdBy || 'Admin', status: isEditing && editingQuestion ? getStatus(editingQuestion) : 'Active',
       fileUploadAllowed: 'No', accountingJournalBased: 'No',
       totalQuestions: data.totalQuestions,
-    }, ...prev]);
+    });
     setSubScreen(null);
     setIsEditing(false);
+    setEditingQuestion(null);
     if (showToast) showToast('AI Interview question created successfully!');
+  };
+
+  const handleVideoSave = (data) => {
+    const nextId = isEditing && editingQuestion ? editingQuestion.id : getNextQuestionId();
+    upsertSavedQuestion({
+      ...(editingQuestion || {}),
+      id: nextId,
+      name: data.question,
+      question: data.question,
+      type: 'Video',
+      level: data.difficulty,
+      domain: '-',
+      parentCategory: data.category,
+      childCategory: '-',
+      createdBy: editingQuestion?.createdBy || 'Admin',
+      status: isEditing && editingQuestion ? getStatus(editingQuestion) : 'Active',
+      fileUploadAllowed: 'Yes',
+      accountingJournalBased: 'No',
+      marks: data.marks,
+      videoFile: data.videoFile || null,
+      videoFileName: data.videoFileName || '',
+      videoPreviewUrl: data.videoPreviewUrl || '',
+      materialFiles: data.materialFiles || [],
+    });
+    setSubScreen(null);
+    setIsEditing(false);
+    setEditingQuestion(null);
+    if (showToast) showToast('Video question created successfully!');
+  };
+
+  const handleEssaySave = (data) => {
+    const nextId = isEditing && editingQuestion ? editingQuestion.id : getNextQuestionId();
+    upsertSavedQuestion({
+      ...(editingQuestion || {}),
+      id: nextId,
+      name: data.scenario,
+      question: data.scenario,
+      scenario: data.scenario,
+      type: 'Essay',
+      level: data.difficulty,
+      domain: '-',
+      parentCategory: data.category,
+      childCategory: '-',
+      createdBy: editingQuestion?.createdBy || 'Admin',
+      status: isEditing && editingQuestion ? getStatus(editingQuestion) : 'Active',
+      fileUploadAllowed: 'Yes',
+      accountingJournalBased: 'No',
+      questionBlocks: data.questionBlocks || [],
+      materialFiles: data.materialFiles || [],
+    });
+    setSubScreen(null);
+    setIsEditing(false);
+    setEditingQuestion(null);
+    if (showToast) showToast('Essay question created successfully!');
   };
 
   const handleBulkDelete = () => {
@@ -904,6 +980,30 @@ const QAQuestions = ({ showToast }) => {
         key={editingQuestion?.id || 'new-aiinterview'}
         onBack={() => goBack(isEditing ? null : 'aiInterview')}
         onSave={handleAIInterviewSave}
+        isEditing={isEditing}
+        initialData={editingQuestion}
+      />
+    );
+  }
+
+  if (subScreen === 'createVideoQuestion') {
+    return (
+      <CreateVideoQuestion
+        key={editingQuestion?.id || 'new-video-question'}
+        onBack={() => goBack(null)}
+        onSave={handleVideoSave}
+        isEditing={isEditing}
+        initialData={editingQuestion}
+      />
+    );
+  }
+
+  if (subScreen === 'createEssayQuestion') {
+    return (
+      <CreateEssayQuestion
+        key={editingQuestion?.id || 'new-essay-question'}
+        onBack={() => goBack(null)}
+        onSave={handleEssaySave}
         isEditing={isEditing}
         initialData={editingQuestion}
       />
