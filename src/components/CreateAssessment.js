@@ -263,16 +263,6 @@ const CreateAssessment = ({ onBack, onSuccess }) => {
     }, 0);
   };
 
-  const validateStep1 = () => {
-    const e = {};
-    if (!f.assessmentName.trim()) e.assessmentName = 'Assessment name is required';
-    if (!f.description.trim()) e.description = 'Description is required';
-    if (!f.evaluationCriteria.trim()) e.evaluationCriteria = 'Evaluation criteria is required';
-    setErrors(e);
-    if (Object.keys(e).length > 0) scrollToFirstError(Object.keys(e));
-    return Object.keys(e).length === 0;
-  };
-
   const validateStep2 = () => {
     const e = {};
     if (selectedQTypes.length === 0) e.qTypes = 'Select at least one question type';
@@ -293,7 +283,7 @@ const CreateAssessment = ({ onBack, onSuccess }) => {
   };
 
   const handleNext = () => {
-    if (validateStep1()) setStep(2);
+    setStep(2);
   };
 
   const handleSubmit = () => {
@@ -339,6 +329,63 @@ const CreateAssessment = ({ onBack, onSuccess }) => {
     return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2).replace(/\.?0+$/, '');
   };
 
+  const clearWeightageErrors = (prevErrors) => {
+    const next = { ...prevErrors };
+    Object.keys(next).forEach((key) => {
+      if (key.endsWith('_reportWeightage') || key === 'reportWeightageTotal') {
+        delete next[key];
+      }
+    });
+    return next;
+  };
+
+  const getAutoWeightageType = (configs, types) => {
+    const blankTypes = types.filter((type) => (configs[type]?.reportWeightage ?? '') === '');
+    if (blankTypes.length !== 1) return '';
+
+    const hasInvalid = types.some((type) => {
+      const value = configs[type]?.reportWeightage ?? '';
+      if (value === '') return false;
+      const numericValue = Number(value);
+      return Number.isNaN(numericValue) || numericValue < 0 || numericValue > REPORT_WEIGHTAGE_TOTAL;
+    });
+
+    if (hasInvalid) return '';
+    return blankTypes[0];
+  };
+
+  const syncAutoWeightage = (configs, types) => {
+    if (types.length === 0) return configs;
+
+    const autoType = getAutoWeightageType(configs, types);
+    if (!autoType) return configs;
+
+    const total = types.reduce((sum, type) => {
+      if (type === autoType) return sum;
+      const value = configs[type]?.reportWeightage ?? '';
+      const numericValue = Number(value);
+      if (value === '' || Number.isNaN(numericValue) || numericValue < 0 || numericValue > REPORT_WEIGHTAGE_TOTAL) {
+        return sum;
+      }
+      return sum + numericValue;
+    }, 0);
+
+    const remaining = REPORT_WEIGHTAGE_TOTAL - total;
+    if (remaining < 0) return configs;
+
+    const nextValue = formatWeightage(remaining);
+    const currentValue = configs[autoType]?.reportWeightage ?? '';
+    if (currentValue === nextValue) return configs;
+
+    return {
+      ...configs,
+      [autoType]: {
+        ...configs[autoType],
+        reportWeightage: nextValue,
+      },
+    };
+  };
+
   const getReportWeightageSummary = (types, configs) => {
     const values = types.map((type) => configs[type]?.reportWeightage ?? '');
     const missingCount = values.filter((value) => value === '').length;
@@ -355,6 +402,7 @@ const CreateAssessment = ({ onBack, onSuccess }) => {
     if (types.length === 0) return '';
     const summary = getReportWeightageSummary(types, configs);
     if (summary.invalidCount > 0) return 'Each Report Weightage must be between 0 and 100.';
+    if (summary.total > REPORT_WEIGHTAGE_TOTAL) return `Total Report Weightage cannot exceed 100%. Current total: ${formatWeightage(summary.total)}%.`;
     if (summary.missingCount > 0) return `Report Weightage is required for all question types. Remaining to assign: ${formatWeightage(Math.max(REPORT_WEIGHTAGE_TOTAL - summary.total, 0))}%.`;
     if (summary.total !== REPORT_WEIGHTAGE_TOTAL) return `Total Report Weightage must equal 100%. Current total: ${formatWeightage(summary.total)}%.`;
     return '';
@@ -377,12 +425,13 @@ const CreateAssessment = ({ onBack, onSuccess }) => {
     Object.keys(newConfigs).forEach((k) => {
       if (!types.includes(k)) delete newConfigs[k];
     });
-    setQTypeConfigs(newConfigs);
+    setQTypeConfigs(syncAutoWeightage(newConfigs, types));
   };
 
   const handleQTypeChange = (types) => {
     setSelectedQTypes(types);
     initConfig(types);
+    setErrors((prev) => clearWeightageErrors(prev));
   };
 
   const updateConfig = (type, field, value) => {
@@ -391,45 +440,16 @@ const CreateAssessment = ({ onBack, onSuccess }) => {
 
   const updateReportWeightage = (type, value) => {
     const sanitizedValue = value.replace(/[^\d.]/g, '');
-    const parsedValue = sanitizedValue === '' ? NaN : Number(sanitizedValue);
 
     setQTypeConfigs((prev) => {
       const next = {
         ...prev,
         [type]: { ...prev[type], reportWeightage: sanitizedValue },
       };
-
-      const otherTypes = selectedQTypes.filter((qType) => qType !== type);
-      if (
-        otherTypes.length > 0 &&
-        sanitizedValue !== '' &&
-        !Number.isNaN(parsedValue) &&
-        parsedValue >= 0 &&
-        parsedValue <= REPORT_WEIGHTAGE_TOTAL
-      ) {
-        const remainingBasisPoints = Math.round((REPORT_WEIGHTAGE_TOTAL - parsedValue) * 100);
-        const baseShare = Math.floor(remainingBasisPoints / otherTypes.length);
-        let remainder = remainingBasisPoints % otherTypes.length;
-
-        otherTypes.forEach((qType) => {
-          const shareBasisPoints = baseShare + (remainder > 0 ? 1 : 0);
-          if (remainder > 0) remainder -= 1;
-          next[qType] = {
-            ...next[qType],
-            reportWeightage: formatWeightage(shareBasisPoints / 100),
-          };
-        });
-      }
-
-      return next;
+      return syncAutoWeightage(next, selectedQTypes);
     });
 
-    setErrors((prev) => {
-      const next = { ...prev };
-      delete next[`${type}_reportWeightage`];
-      delete next.reportWeightageTotal;
-      return next;
-    });
+    setErrors((prev) => clearWeightageErrors(prev));
   };
 
   const reportWeightageSummary = getReportWeightageSummary(selectedQTypes, qTypeConfigs);
@@ -591,7 +611,7 @@ const CreateAssessment = ({ onBack, onSuccess }) => {
                       <div className="ca-card-icon ca-card-icon--amber"><Settings size={18} /></div>
                       <div>
                         <div className="ca-card-title">Total number of questions in category</div>
-                        <div className="ca-card-subtitle">Configure each question type with difficulty, passing %, report weightage, questions count, and categories</div>
+                        <div className="ca-card-subtitle">Configure each question type with difficulty, passing %, report weightage, questions count, and categories. When only one question type is still blank, we suggest the remaining percentage and you can still edit it.</div>
                       </div>
                     </div>
 
@@ -688,7 +708,13 @@ const CreateAssessment = ({ onBack, onSuccess }) => {
                             </td>
                             <td>
                               <span className="ca-s2-totals-status">
-                                {reportWeightageSummary.missingCount > 0 ? `${reportWeightageSummary.missingCount} field(s) pending` : 'All question types assigned'}
+                                {reportWeightageSummary.invalidCount > 0
+                                  ? 'Fix invalid weightages'
+                                  : reportWeightageSummary.total > REPORT_WEIGHTAGE_TOTAL
+                                    ? `Over by ${formatWeightage(reportWeightageSummary.total - REPORT_WEIGHTAGE_TOTAL)}%`
+                                    : reportWeightageSummary.missingCount > 0
+                                      ? `${reportWeightageSummary.missingCount} field(s) pending`
+                                      : 'All question types assigned'}
                               </span>
                             </td>
                           </tr>
