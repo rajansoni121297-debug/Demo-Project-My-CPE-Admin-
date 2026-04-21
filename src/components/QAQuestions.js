@@ -909,6 +909,7 @@ const QAQuestions = ({ showToast }) => {
       fileUploadAllowed: 'Yes',
       accountingJournalBased: 'No',
       marks: data.marks,
+      explanation: data.explanation,
       videoFile: data.videoFile || null,
       videoFileName: data.videoFileName || '',
       videoPreviewUrl: data.videoPreviewUrl || '',

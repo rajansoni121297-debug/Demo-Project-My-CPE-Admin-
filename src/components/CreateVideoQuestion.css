@@ -10,8 +10,24 @@
   margin-bottom: 24px;
 }
 
-.cv-upload-section {
+.cv-media-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
   margin-bottom: 24px;
+}
+
+.cv-media-left,
+.cv-media-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.cv-upload-section {
+  margin-bottom: 0;
 }
 
 .cv-file-row {
@@ -303,6 +319,10 @@
     grid-template-columns: 1fr 1fr;
   }
 
+  .cv-media-grid {
+    grid-template-columns: 1fr;
+  }
+
   .cv-preview-grid {
     grid-template-columns: 1fr;
   }
@@ -317,6 +337,10 @@
   .cv-upload-row {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .cv-media-grid {
+    gap: 20px;
   }
 
   .cv-browse-btn,

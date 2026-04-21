@@ -86,6 +86,7 @@ const CreateVideoQuestion = ({ onBack, onSave, isEditing = false, initialData })
   const [marks, setMarks] = useState(initialData?.marks ?? '');
   const [category, setCategory] = useState(initialData?.parentCategory || '');
   const [question, setQuestion] = useState(initialData?.question || initialData?.name || '');
+  const [explanation, setExplanation] = useState(initialData?.explanation || '');
   const [videoFile, setVideoFile] = useState(initialData?.videoFile || null);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState(initialData?.videoPreviewUrl || initialData?.recordedBlobUrl || '');
   const [materialFiles, setMaterialFiles] = useState(initialData?.materialFiles || []);
@@ -253,6 +254,7 @@ const CreateVideoQuestion = ({ onBack, onSave, isEditing = false, initialData })
       marks,
       category,
       question,
+      explanation,
       videoFile,
       videoFileName: videoFileLabel,
       videoPreviewUrl,
@@ -344,74 +346,93 @@ const CreateVideoQuestion = ({ onBack, onSave, isEditing = false, initialData })
           {errors.question && <span className="cm-error-msg">{errors.question}</span>}
         </div>
 
-        <div className="cv-upload-section">
-          <label className="cm-label">Upload Video File <span className="cm-req">*</span></label>
-          <div className="cv-file-row">
-            <input
-              type="text"
-              className={`cm-text-input cv-file-display ${errors.videoFile ? 'cm-text-input--error' : ''}`}
-              value={videoFileLabel}
-              placeholder="Choose file"
-              readOnly
-            />
-            <button type="button" className="cv-browse-btn" onClick={() => fileInputRef.current?.click()}>
-              Browse
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="video/mp4,video/webm,video/*"
-              hidden
-              onChange={handleVideoFileSelect}
-            />
-          </div>
-          <div className="cv-help-text">Allowed: mp4 | webm</div>
-          {errors.videoFile && <span className="cm-error-msg">{errors.videoFile}</span>}
-          {errors.recording && <span className="cm-error-msg">{errors.recording}</span>}
+        <div className="cv-media-grid">
+          <div className="cv-media-left">
+            <div className="cv-upload-section">
+              <label className="cm-label">Upload Video File <span className="cm-req">*</span></label>
+              <div className="cv-file-row">
+                <input
+                  type="text"
+                  className={`cm-text-input cv-file-display ${errors.videoFile ? 'cm-text-input--error' : ''}`}
+                  value={videoFileLabel}
+                  placeholder="Choose file"
+                  readOnly
+                />
+                <button type="button" className="cv-browse-btn" onClick={() => fileInputRef.current?.click()}>
+                  Browse
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="video/mp4,video/webm,video/*"
+                  hidden
+                  onChange={handleVideoFileSelect}
+                />
+              </div>
+              <div className="cv-help-text">Allowed: mp4 | webm</div>
+              {errors.videoFile && <span className="cm-error-msg">{errors.videoFile}</span>}
+              {errors.recording && <span className="cm-error-msg">{errors.recording}</span>}
 
-          <div className="cv-preview-shell">
-            {renderVideoPreview()}
-          </div>
+              <div className="cv-preview-shell">
+                {renderVideoPreview()}
+              </div>
 
-          <div className="cv-record-row">
-            <button
-              type="button"
-              className={`cv-record-btn ${isRecording ? 'cv-record-btn--stop' : ''}`}
-              onClick={startRecording}
-            >
-              {isRecording ? <Square size={15} /> : <Circle size={15} />}
-              {isRecording ? 'Stop Recording' : 'Start Recording'}
-            </button>
-          </div>
-        </div>
-
-        <div className="cv-upload-section">
-          <label className="cm-label">Upload Material</label>
-          <div className="cv-upload-row">
-            <button type="button" className="cv-material-btn" onClick={() => materialInputRef.current?.click()}>
-              <Upload size={15} />
-              Browse File
-            </button>
-            <input
-              ref={materialInputRef}
-              type="file"
-              multiple
-              hidden
-              onChange={handleMaterialFiles}
-            />
-          </div>
-          {materialFiles.length > 0 && (
-            <div className="cv-files-list">
-              {materialFiles.map((file, index) => (
-                <div key={`${file.name}-${index}`} className="cv-file-chip">
-                  <span className="cv-file-chip-name">{file.name}</span>
-                  <button type="button" className="cv-file-chip-remove" onClick={() => removeMaterialFile(index)}>
-                    <X size={12} />
-                  </button>
-                </div>
-              ))}
+              <div className="cv-record-row">
+                <button
+                  type="button"
+                  className={`cv-record-btn ${isRecording ? 'cv-record-btn--stop' : ''}`}
+                  onClick={startRecording}
+                >
+                  {isRecording ? <Square size={15} /> : <Circle size={15} />}
+                  {isRecording ? 'Stop Recording' : 'Start Recording'}
+                </button>
+              </div>
             </div>
-          )}
+
+            <div className="cv-upload-section">
+              <label className="cm-label">Upload Material</label>
+              <div className="cv-upload-row">
+                <button type="button" className="cv-material-btn" onClick={() => materialInputRef.current?.click()}>
+                  <Upload size={15} />
+                  Browse File
+                </button>
+                <input
+                  ref={materialInputRef}
+                  type="file"
+                  multiple
+                  hidden
+                  onChange={handleMaterialFiles}
+                />
+              </div>
+              {materialFiles.length > 0 && (
+                <div className="cv-files-list">
+                  {materialFiles.map((file, index) => (
+                    <div key={`${file.name}-${index}`} className="cv-file-chip">
+                      <span className="cv-file-chip-name">{file.name}</span>
+                      <button type="button" className="cv-file-chip-remove" onClick={() => removeMaterialFile(index)}>
+                        <X size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="cv-media-right">
+            <label className="cm-label">Explanation :</label>
+            <div className="cm-editor-card">
+              <QuestionEditorToolbar />
+              <textarea
+                className="cm-editor-area"
+                placeholder="Type Explanation: Why this answer is correct?"
+                value={explanation}
+                onChange={(e) => { setExplanation(e.target.value); markDirty(); }}
+                style={{ minHeight: 430 }}
+              />
+              <div className="cm-char-count">Characters : {explanation.length}</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -464,6 +485,11 @@ const CreateVideoQuestion = ({ onBack, onSave, isEditing = false, initialData })
               <div>
                 <div className="cv-preview-label">Question</div>
                 <div className="cv-preview-text">{question || 'No question entered yet.'}</div>
+              </div>
+
+              <div>
+                <div className="cv-preview-label">Explanation</div>
+                <div className="cv-preview-text">{explanation || 'No explanation entered yet.'}</div>
               </div>
 
               <div>
